@@ -21,6 +21,7 @@
     <permissions>
       <permission permission_group_id="conversation" permission_id="canReply" permission_type="flag" default_value="unset" interface_group_id="conversationPermissions" display_order="13"/>
       <permission permission_group_id="conversation" permission_id="replyLimit" permission_type="integer" depend_permission_id="canReply" default_value_int="-1" interface_group_id="conversationPermissions" display_order="14"/>
+      <permission permission_group_id="conversation" permission_id="emailParticipantLimit" permission_type="integer" depend_permission_id="canReply" default_value_int="-1" interface_group_id="conversationPermissions" display_order="15"/>
     </permissions>
     <interface_groups/>
   </permissions>
@@ -31,6 +32,7 @@
     <phrase title="member_is_recipient" version_id="10000" version_string="1.0.0"><![CDATA[Member is Recipient]]></phrase>
     <phrase title="permission_conversation_canReply" version_id="1" version_string="1.0.0"><![CDATA[Can Reply to Conversation]]></phrase>
     <phrase title="permission_conversation_replyLimit" version_id="1" version_string="1.0.0"><![CDATA[Conversation Reply Limit]]></phrase>
+    <phrase title="permission_conversation_emailParticipantLimit" version_id="10002" version_string="1.0.2"><![CDATA[Participant limit for email]]></phrase>
     <phrase title="search_conversations" version_id="10000" version_string="1.0.0"><![CDATA[Search Conversations]]></phrase>
     <phrase title="search_conversations_only" version_id="10000" version_string="1.0.0"><![CDATA[Search conversations only]]></phrase>
     <phrase title="search_conversations_started_by_this_member_only" version_id="10000" version_string="1.0.0"><![CDATA[Search conversations started by this member only]]></phrase>
