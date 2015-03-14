@@ -3,6 +3,7 @@
 class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenForo_Search_DataHandler_Abstract
 {
     protected $_conversationModel = null;
+    protected $_userModel = null;
 
     /**
      * Inserts into (or replaces a record) in the index.
@@ -269,6 +270,14 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
             $constraints['titles_only'] = false;
         }
 
+        $recipients = $input->filterSingle('recipients', XenForo_Input::STRING);
+        if ($recipients)
+        {
+            $usernames = array_unique(explode(',', $recipients));
+            $users = $this->_getUserModel()->getUsersByNames($usernames, array(), $notFound);
+            $constraints['recipients'] = array_keys($users);
+        }
+
         return $constraints;
     }
 
@@ -306,6 +315,14 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
                 {
                     return array(
                         'metadata' => array('conversation', $conversationId)
+                    );
+                }
+                break;
+            case 'recipients':
+                if ($constraintInfo)
+                {
+                    return array(
+                       'query' => array('recipient', 'user_id', '=', $constraintInfo)
                     );
                 }
                 break;
@@ -357,7 +374,6 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
                 }
             }
         }
-
 
         $viewParams['search']['conversation'] = array();
         if (!empty($params['conversation']))
@@ -413,6 +429,16 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
                 'relationship' => array('search_index', 'discussion_id'),
             );
         }
+        
+        if (isset($tables['recipient']))
+        {
+            $structures['recipient'] = array(
+                'table' => 'xf_conversation_recipient',
+                'key' => 'conversation_id',
+                'relationship' => array('search_index', 'discussion_id'),
+            );
+            
+        }
 
         return $structures;
     }
@@ -434,5 +460,14 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
             $this->_conversationModel = XenForo_Model::create('XenForo_Model_Conversation');
         }
         return $this->_conversationModel;
+    }
+
+    protected function _getUserModel()
+    {
+        if (!$this->_userModel)
+        {
+            $this->_userModel = XenForo_Model::create('XenForo_Model_User');
+        }
+        return $this->_userModel;
     }
 }

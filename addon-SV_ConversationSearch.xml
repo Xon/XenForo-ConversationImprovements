@@ -112,6 +112,7 @@
 		</dl>
 	</fieldset>
 	
+	<xen:comment>
 	<xen:if hascontent="true">
 	<fieldset>
 	<xen:contentcheck>
@@ -139,6 +140,7 @@
 	</xen:contentcheck>
 	</fieldset>
 	</xen:if>
+	</xen:comment>
 
 	<dl class="ctrlUnit">
 		<dt><label>{xen:phrase order_by}:</label></dt>
