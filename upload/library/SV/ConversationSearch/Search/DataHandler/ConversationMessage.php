@@ -376,7 +376,7 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
             }
         }
 
-        return $controller->responseView('XenForo_ViewPublic_Search_Form_Post', 'search_form_post', $viewParams);
+        return $controller->responseView('XenForo_ViewPublic_Search_Form_Post', 'search_form_conversation_message', $viewParams);
     }
 
     /**
