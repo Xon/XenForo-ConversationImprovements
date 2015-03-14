@@ -38,6 +38,7 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
             }
 
             $recipients = array();
+            $recipients[] = $conversation['user_id'];
             if ($conversation['recipients'])
             {
                 $recipientNames = $conversation['recipients'] ? @unserialize($conversation['recipients']) : array();
@@ -322,7 +323,7 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
                 if ($constraintInfo)
                 {
                     return array(
-                       'query' => array('recipient', 'user_id', '=', $constraintInfo)
+                       'metadata' => array('recipients', $constraintInfo)
                     );
                 }
                 break;
@@ -428,16 +429,6 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
                 'key' => 'conversation_id',
                 'relationship' => array('search_index', 'discussion_id'),
             );
-        }
-        
-        if (isset($tables['recipient']))
-        {
-            $structures['recipient'] = array(
-                'table' => 'xf_conversation_recipient',
-                'key' => 'conversation_id',
-                'relationship' => array('search_index', 'discussion_id'),
-            );
-            
         }
 
         return $structures;

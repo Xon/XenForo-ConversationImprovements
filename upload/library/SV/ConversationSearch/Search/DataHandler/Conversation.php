@@ -26,6 +26,7 @@ class SV_ConversationSearch_Search_DataHandler_Conversation extends XenForo_Sear
         }
 
         $recipients = array();
+        $recipients[] = $data['user_id'];
         if ($data['recipients'])
         {
             $recipientNames = $data['recipients'] ? @unserialize($data['recipients']) : array();
