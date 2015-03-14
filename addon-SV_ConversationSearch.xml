@@ -8,6 +8,8 @@
   <code_events/>
   <code_event_listeners>
     <listener event_id="load_class" execute_order="10" callback_class="SV_ConversationSearch_Listener" callback_method="load_class" active="1" hint="XenForo_Model_Conversation" description="XenForo_Model_Conversation"/>
+    <listener event_id="load_class" execute_order="10" callback_class="SV_ConversationSearch_Listener" callback_method="load_class" active="1" hint="XenForo_DataWriter_ConversationMaster" description="XenForo_DataWriter_ConversationMaster"/>
+    <listener event_id="load_class" execute_order="10" callback_class="SV_ConversationSearch_Listener" callback_method="load_class" active="1" hint="XenForo_DataWriter_ConversationMessage" description="XenForo_DataWriter_ConversationMessage"/>
   </code_event_listeners>
   <cron/>
   <email_templates/>
@@ -18,10 +20,62 @@
     <permissions/>
     <interface_groups/>
   </permissions>
-  <phrases/>
+  <phrases>
+    <phrase title="conversation_by" version_id="0" version_string="1.0.0"><![CDATA[Conversation by]]></phrase>
+    <phrase title="conversation_message_by" version_id="0" version_string="1.0.0"><![CDATA[Conversation message by]]></phrase>
+    <phrase title="display_results_as_conversations" version_id="0" version_string="1.0.0"><![CDATA[Display results as conversations]]></phrase>
+    <phrase title="search_conversations" version_id="0" version_string="1.0.0"><![CDATA[Search Conversations]]></phrase>
+    <phrase title="search_conversations_started_by_this_member_only" version_id="0" version_string="1.0.0"><![CDATA[Search conversations started by this member only]]></phrase>
+  </phrases>
   <route_prefixes/>
   <style_properties/>
-  <templates/>
+  <templates>
+    <template title="search_result_conversation" version_id="1" version_string="0.01"><![CDATA[<li id="conversation-{$conversation.conversation_id}" class="searchResult conversation primaryContent{xen:if $conversation.isIgnored, ' ignored'}" data-author="{$conversation.username}">
+
+	<div class="listBlock posterAvatar"><xen:avatar user="$conversation" size="s" img="true" /></div>
+
+	<div class="listBlock main">
+		<div class="titleText">
+			<span class="contentType">{xen:phrase conversation}</span>
+			<h3 class="title{xen:if {$conversation.isNew}, ' new'}"><a href="{xen:link conversations, $conversation}">{xen:helper conversationPrefix, $conversation}{xen:helper highlight, $conversation.title, $search.search_query, 'highlight'}</a></h3>
+		</div>
+
+		<blockquote class="snippet">
+			<a href="{xen:link conversations, $conversation}">{xen:helper snippet, $conversation_message.message, 150, {xen:array 'term={$search.search_query}', 'emClass=highlight', 'stripQuotes=1'}}</a>
+		</blockquote>
+
+		<div class="meta">
+			<xen:if is="{$enableInlineMod} AND {$conversation.canInlineMod}"><input type="checkbox" name="conversations[]" value="{$conversation.conversation_id}" class="InlineModCheck" id="inlineModCheck-conversation-{$conversation.conversation_id}" data-target="#conversation-{$conversation.conversation_id}" title="{xen:phrase select_conversation}: {$conversation.title}" /></xen:if>
+			{xen:phrase conversation_by}: <xen:username user="$conversation" />,
+			<xen:datetime time="$conversation.start_date" />,
+			{xen:phrase x_replies, 'count={xen:number $conversation.reply_count}'}</a>
+		</div>
+	</div>
+
+</li>]]></template>
+    <template title="search_result_conversation_message" version_id="1" version_string="0.01"><![CDATA[<li id="conversation_message-{$conversation_message.message_id}" class="searchResult conversation_message primaryContent{xen:if $conversation_message.isIgnored, ' ignored'}" data-author="{$conversation_message.username}">
+
+	<div class="listBlock conversation_messageerAvatar"><xen:avatar user="$conversation_message" size="s" img="true" /></div>
+
+	<div class="listBlock main">
+		<div class="titleText">
+			<span class="contentType">{xen:phrase conversation_message}</span>
+			<h3 class="title{xen:if {$conversation_message.isNew}, ' new'}"><a href="{xen:link conversations/message, $conversation_message, 'message_id={$conversation_message.message_id}'}">{xen:helper threadPrefix, $conversation}{xen:helper highlight, $conversation.title, $search.search_query, 'highlight'}</a></h3>
+		</div>
+
+		<blockquote class="snippet">
+			<a href="{xen:link conversations/message, $conversation_message, 'message_id={$conversation_message.message_id}'}">{xen:helper snippet, $conversation_message.message, 150, {xen:array 'term={$search.search_query}', 'emClass=highlight', 'stripQuote=1'}}</a>
+		</blockquote>
+
+		<div class="meta">
+			<xen:if is="{$enableInlineMod} AND {$conversation_message.canInlineMod}"><input type="checkbox" name="conversation_messages[]" value="{$conversation_message.message_id}" class="InlineModCheck" data-target="#message-{$conversation_message.message_id}" title="{xen:phrase select_this_conversation_message_by_x, 'name={$conversation_message.username}'}" /></xen:if>
+			{xen:phrase conversation_message_by}: <xen:username user="$conversation_message" />,
+			<xen:datetime time="{$conversation_message.message_date}" />
+			{xen:phrase in_forum}: <a href="{xen:link forums, $forum}">{$forum.title}</a>
+		</div>
+	</div>
+</li>]]></template>
+  </templates>
   <public_template_modifications/>
   <bb_code_media_sites/>
   <bb_codes/>
