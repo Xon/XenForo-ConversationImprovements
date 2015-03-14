@@ -163,9 +163,8 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
             if (!isset($message['conversation']) || $message['message_id'] == $message['conversation']['first_message_id'] && isset($resultsGrouped['conversation'][$message['conversation_id']]))
             {
                 // matched first message and conversation, skip the message
-                unset($message[$messageId]);
+                unset($messages[$messageId]);
             }
-
         }
 
         return $messages;
