@@ -13,7 +13,7 @@ class SV_ConversationSearch_XenForo_DataWriter_ConversationMaster extends XFCP_S
 
     protected function _postSave()
     {
-        if ($this->_firstMessageDw && $this->getOption(self::OPTION_INDEX_FOR_SEARCH))
+        if ($this->_firstMessageDw)
         {
             $this->_firstMessageDw->setOption(SV_ConversationSearch_Search_DataHandler_ConversationMessage::OPTION_INDEX_FOR_SEARCH, false);
         }
@@ -29,6 +29,7 @@ class SV_ConversationSearch_XenForo_DataWriter_ConversationMaster extends XFCP_S
     protected function _postDelete()
     {
         parent::_postDelete();
+        $this->_deleteFromSearchIndex();
     }
 
     protected function _insertOrUpdateSearchIndex()
@@ -39,14 +40,17 @@ class SV_ConversationSearch_XenForo_DataWriter_ConversationMaster extends XFCP_S
             return;
         }
 
-        $viewingUser = XenForo_Visitor::getInstance()->toArray();
-        $conversationModel = $this->_getConversationModel();
-        $conversation = $conversationModel->getConversationById($this->get('conversation_id'), $viewingUser['user_id']);
-
         $indexer = new XenForo_Search_Indexer();
-        $dataHandler->insertIntoIndex($indexer, $this->getMergedData(), $conversation);
+        $dataHandler->insertIntoIndex($indexer, $this->getMergedData(), null);
+        
+        if ($this->_firstMessageDw)
+        {
+            $dataHandler = $this->_getSearchDataHandlerForMessage();
+            $dataHandler->insertIntoIndex($indexer, $this->_firstMessageDw->getMergedData(), $this->getMergedData());
+        }
 
-        if ($this->isUpdate())
+        // limit how what can trigger re-indexing of the conversation
+        if ($this->isUpdate() && ($this->isChanged('recipients') || $this->isChanged('title')))
         {
             XenForo_Application::defer('SearchIndexPartial', array(
                 'contentType' => 'conversation_message',
@@ -55,6 +59,14 @@ class SV_ConversationSearch_XenForo_DataWriter_ConversationMaster extends XFCP_S
         }
     }
 
+    protected function _insertOrUpdateMessageSearchIndex()
+    {
+        $dataHandler = new Waindigo_ConvSearch_Search_DataHandler_ConversationMessage();
+
+        $indexer = new XenForo_Search_Indexer();
+        $dataHandler->insertIntoIndex($indexer, $this->_firstMessageDw->getMergedData(), $this->getMergedData());
+    }
+    
     protected function _deleteFromSearchIndex()
     {
         $dataHandler = $this->_getSearchDataHandler();
