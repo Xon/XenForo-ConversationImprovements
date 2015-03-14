@@ -1,0 +1,5 @@
+<?php
+
+class SV_ConversationSearch_XenForo_Model_Conversation extends XFCP_SV_ConversationSearch_XenForo_Model_Conversation
+{
+}

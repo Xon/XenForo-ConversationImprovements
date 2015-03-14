@@ -1,0 +1,5 @@
+<?php
+
+class SV_ConversationSearch_Search_DataHandler_Conversation extends XenForo_Search_DataHandler_Abstract
+{
+}
