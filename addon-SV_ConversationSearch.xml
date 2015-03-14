@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="SV_ConversationSearch" title="Conversation Search" version_string="0.01" version_id="1" url="" install_callback_class="SV_ConversationSearch_Listener" install_callback_method="install" uninstall_callback_class="SV_ConversationSearch_Listener" uninstall_callback_method="uninstall">
+<addon addon_id="SV_ConversationSearch" title="Conversation Search" version_string="1.0.0" version_id="100000" url="" install_callback_class="SV_ConversationSearch_Listener" install_callback_method="install" uninstall_callback_class="SV_ConversationSearch_Listener" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -21,22 +21,22 @@
     <interface_groups/>
   </permissions>
   <phrases>
-    <phrase title="conversation_by" version_id="0" version_string="1.0.0"><![CDATA[Conversation by]]></phrase>
-    <phrase title="conversation_message_by" version_id="0" version_string="1.0.0"><![CDATA[Conversation message by]]></phrase>
-    <phrase title="display_results_as_conversations" version_id="0" version_string="1.0.0"><![CDATA[Display results as conversations]]></phrase>
-    <phrase title="member_is_recipient" version_id="1" version_string="0.01"><![CDATA[Member is Recipient]]></phrase>
-    <phrase title="search_conversations" version_id="0" version_string="1.0.0"><![CDATA[Search Conversations]]></phrase>
-    <phrase title="search_conversations_only" version_id="1" version_string="0.01"><![CDATA[Search conversations only]]></phrase>
-    <phrase title="search_conversations_started_by_this_member_only" version_id="0" version_string="1.0.0"><![CDATA[Search conversations started by this member only]]></phrase>
-    <phrase title="search_this_conversation_only" version_id="1" version_string="0.01"><![CDATA[Search this conversation only]]></phrase>
-    <phrase title="your_conversation_messages" version_id="1" version_string="0.01"><![CDATA[Your Conversation Messages]]></phrase>
+    <phrase title="conversation_by" version_id="100000" version_string="1.0.0"><![CDATA[Conversation by]]></phrase>
+    <phrase title="conversation_message_by" version_id="100000" version_string="1.0.0"><![CDATA[Conversation message by]]></phrase>
+    <phrase title="display_results_as_conversations" version_id="100000" version_string="1.0.0"><![CDATA[Display results as conversations]]></phrase>
+    <phrase title="member_is_recipient" version_id="100000" version_string="1.0.0"><![CDATA[Member is Recipient]]></phrase>
+    <phrase title="search_conversations" version_id="100000" version_string="1.0.0"><![CDATA[Search Conversations]]></phrase>
+    <phrase title="search_conversations_only" version_id="100000" version_string="1.0.0"><![CDATA[Search conversations only]]></phrase>
+    <phrase title="search_conversations_started_by_this_member_only" version_id="100000" version_string="1.0.0"><![CDATA[Search conversations started by this member only]]></phrase>
+    <phrase title="search_this_conversation_only" version_id="100000" version_string="1.0.0"><![CDATA[Search this conversation only]]></phrase>
+    <phrase title="your_conversation_messages" version_id="100000" version_string="1.0.0"><![CDATA[Your Conversation Messages]]></phrase>
   </phrases>
   <route_prefixes/>
   <style_properties/>
   <templates>
-    <template title="search_bar_conversations_only" version_id="1" version_string="0.01"><![CDATA[<label title="{xen:phrase search_conversations_only}"><input type="checkbox" name="type" value="conversation_message" id="search_bar_conversations" class="Disabler AutoChecker" checked="checked" data-uncheck="#search_bar_conversation" /> {xen:phrase search_conversations_only}</label>]]></template>
-    <template title="search_bar_conversation_only" version_id="1" version_string="0.01"><![CDATA[<label title="{xen:phrase search_this_conversation_only}"><input type="checkbox" name="type[conversation][conversation_id]" value="{$conversation.conversation_id}" id="search_bar_conversation" class="Disabler AutoChecker" data-uncheck="#search_bar_title_only, #search_bar_conversations" /> {xen:phrase search_this_conversation_only}</label>]]></template>
-    <template title="search_form_conversation_message" version_id="1" version_string="0.01"><![CDATA[<xen:title>{xen:phrase search_conversations}</xen:title>
+    <template title="search_bar_conversations_only" version_id="100000" version_string="1.0.0"><![CDATA[<label title="{xen:phrase search_conversations_only}"><input type="checkbox" name="type" value="conversation_message" id="search_bar_conversations" class="Disabler AutoChecker" checked="checked" data-uncheck="#search_bar_conversation" /> {xen:phrase search_conversations_only}</label>]]></template>
+    <template title="search_bar_conversation_only" version_id="100000" version_string="1.0.0"><![CDATA[<label title="{xen:phrase search_this_conversation_only}"><input type="checkbox" name="type[conversation][conversation_id]" value="{$conversation.conversation_id}" id="search_bar_conversation" class="Disabler AutoChecker" data-uncheck="#search_bar_title_only, #search_bar_conversations" /> {xen:phrase search_this_conversation_only}</label>]]></template>
+    <template title="search_form_conversation_message" version_id="100000" version_string="1.0.0"><![CDATA[<xen:title>{xen:phrase search_conversations}</xen:title>
 
 <xen:navigation>
 	<xen:breadcrumb href="{xen:link full:search}">{xen:phrase search}</xen:breadcrumb>
@@ -183,7 +183,7 @@
 
 	</script>
 </form>]]></template>
-    <template title="search_result_conversation" version_id="1" version_string="0.01"><![CDATA[<li id="conversation-{$conversation.conversation_id}" class="searchResult conversation primaryContent{xen:if $conversation.isIgnored, ' ignored'}" data-author="{$conversation.username}">
+    <template title="search_result_conversation" version_id="100000" version_string="1.0.0"><![CDATA[<li id="conversation-{$conversation.conversation_id}" class="searchResult conversation primaryContent{xen:if $conversation.isIgnored, ' ignored'}" data-author="{$conversation.username}">
 	<div class="listBlock posterAvatar"><xen:avatar user="$conversation" size="s" img="true" /></div>
 
 	<div class="listBlock main">
@@ -204,7 +204,7 @@
 		</div>
 	</div>
 </li>]]></template>
-    <template title="search_result_conversation_message" version_id="1" version_string="0.01"><![CDATA[<li id="conversation_message-{$conversation_message.message_id}" class="searchResult conversation_message primaryContent{xen:if $conversation_message.isIgnored, ' ignored'}" data-author="{$conversation_message.username}">
+    <template title="search_result_conversation_message" version_id="100000" version_string="1.0.0"><![CDATA[<li id="conversation_message-{$conversation_message.message_id}" class="searchResult conversation_message primaryContent{xen:if $conversation_message.isIgnored, ' ignored'}" data-author="{$conversation_message.username}">
 	<div class="listBlock posterAvatar"><xen:avatar user="$conversation_message" size="s" img="true" /></div>
 
 	<div class="listBlock main">
