@@ -26,11 +26,16 @@
     <phrase title="display_results_as_conversations" version_id="0" version_string="1.0.0"><![CDATA[Display results as conversations]]></phrase>
     <phrase title="member_is_recipient" version_id="1" version_string="0.01"><![CDATA[Member is Recipient]]></phrase>
     <phrase title="search_conversations" version_id="0" version_string="1.0.0"><![CDATA[Search Conversations]]></phrase>
+    <phrase title="search_conversations_only" version_id="1" version_string="0.01"><![CDATA[Search conversations only]]></phrase>
     <phrase title="search_conversations_started_by_this_member_only" version_id="0" version_string="1.0.0"><![CDATA[Search conversations started by this member only]]></phrase>
+    <phrase title="search_this_conversation_only" version_id="1" version_string="0.01"><![CDATA[Search this conversation only]]></phrase>
+    <phrase title="your_conversation_messages" version_id="1" version_string="0.01"><![CDATA[Your Conversation Messages]]></phrase>
   </phrases>
   <route_prefixes/>
   <style_properties/>
   <templates>
+    <template title="search_bar_conversations_only" version_id="1" version_string="0.01"><![CDATA[<label title="{xen:phrase search_conversations_only}"><input type="checkbox" name="type" value="conversation_message" id="search_bar_conversations" class="Disabler AutoChecker" checked="checked" data-uncheck="#search_bar_conversation" /> {xen:phrase search_conversations_only}</label>]]></template>
+    <template title="search_bar_conversation_only" version_id="1" version_string="0.01"><![CDATA[<label title="{xen:phrase search_this_conversation_only}"><input type="checkbox" name="type[conversation][conversation_id]" value="{$conversation.conversation_id}" id="search_bar_conversation" class="Disabler AutoChecker" data-uncheck="#search_bar_title_only, #search_bar_conversations" /> {xen:phrase search_this_conversation_only}</label>]]></template>
     <template title="search_form_conversation_message" version_id="1" version_string="0.01"><![CDATA[<xen:title>{xen:phrase search_conversations}</xen:title>
 
 <xen:navigation>
@@ -42,7 +47,7 @@
 	data-redirect="true">
 
 	<xen:include template="search_form_tabs" />
-	
+
 	<xen:if is="{$search.conversation}">
 		<xen:require css="search_form_post.css" />
 		<dl class="ctrlUnit" id="threadConstraint">
@@ -52,7 +57,7 @@
 				<input type="hidden" name="conversation_id" value="{$search.conversation.conversation_id}" /></dd>
 		</dl>
 	</xen:if>
-	
+
 	<dl class="ctrlUnit">
 		<dt><label for="ctrl_keywords">{xen:phrase keywords}:</label></dt>
 		<dd>
@@ -80,7 +85,7 @@
 			</dd>
 		</dl>
 	</fieldset>
-		
+
 	<fieldset>
 		<dl class="ctrlUnit">
 			<dt><label for="ctrl_users">{xen:phrase member_is_recipient}:</label></dt>
@@ -102,7 +107,7 @@
 				<input type="date" name="date" value="{$search.date}" class="textCtrl" id="ctrl_date" />
 			</dd>
 		</dl>
-	
+
 		<dl class="ctrlUnit">
 			<dt><label for="ctrl_reply_count">{xen:phrase minimum_number_of_replies}:</label></dt>
 			<dd>
@@ -111,12 +116,12 @@
 			</dd>
 		</dl>
 	</fieldset>
-	
+
 	<xen:comment>
 	<xen:if hascontent="true">
 	<fieldset>
 	<xen:contentcheck>
-	<xen:if is="{$prefixes}">		
+	<xen:if is="{$prefixes}">
 		<dl class="ctrlUnit">
 			<dt><label for="ctrl_prefixes">{xen:phrase thread_prefixes}:</label></dt>
 			<dd><select name="prefixes[]" class="textCtrl" size="5" multiple="multiple" id="ctrl_prefixes">
@@ -132,10 +137,10 @@
 						<xen:foreach loop="$_prefixes" key="$prefixId" value="$prefix">
 							<option value="{$prefixId}"{xen:selected '{$search.prefixes.{$prefixId}}'}>{$prefix.title}</option>
 						</xen:foreach>
-					</xen:if>	
+					</xen:if>
 				</xen:foreach>
 			</select></dd>
-		</dl>			
+		</dl>
 	</xen:if>
 	</xen:contentcheck>
 	</fieldset>
@@ -165,9 +170,9 @@
 
 	<input type="hidden" name="type" value="conversation_message" />
 	<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
-	
+
 	<script>
-	
+
 	$(function()
 	{
 		$('#TitleRemove').click(function(e)
@@ -175,7 +180,7 @@
 			$(this).closest('dl.ctrlUnit').xfRemove();
 		});
 	});
-	
+
 	</script>
 </form>]]></template>
     <template title="search_result_conversation" version_id="1" version_string="0.01"><![CDATA[<li id="conversation-{$conversation.conversation_id}" class="searchResult conversation primaryContent{xen:if $conversation.isIgnored, ' ignored'}" data-author="{$conversation.username}">
@@ -221,7 +226,54 @@
 </li>]]></template>
   </templates>
   <public_template_modifications>
-    <modification template="search_form_tabs" modification_key="SV_ConversationSearch_search_form_tabs_1" description="Inject tabs" execution_order="10" enabled="1" action="preg_replace">
+    <modification template="conversation_add" modification_key="SV_ConversationSearch_conversation_add" description="Inject Search bar" execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#$#]]></find>
+      <replace><![CDATA[<xen:container var="$searchBar.conversations"><xen:include template="search_bar_conversations_only" /></xen:container>]]></replace>
+    </modification>
+    <modification template="conversation_edit" modification_key="SV_ConversationSearch_conversation_edit" description="Inject Search bar" execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#$#]]></find>
+      <replace><![CDATA[<xen:container var="$searchBar.conversation"><xen:include template="search_bar_conversation_only" /></xen:container>
+<xen:container var="$searchBar.conversations"><xen:include template="search_bar_conversations_only" /></xen:container>]]></replace>
+    </modification>
+    <modification template="conversation_invite" modification_key="SV_ConversationSearch_conversation_invite" description="Inject Search bar" execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#$#]]></find>
+      <replace><![CDATA[<xen:container var="$searchBar.conversation"><xen:include template="search_bar_conversation_only" /></xen:container>
+<xen:container var="$searchBar.conversations"><xen:include template="search_bar_conversations_only" /></xen:container>]]></replace>
+    </modification>
+    <modification template="conversation_leave" modification_key="SV_ConversationSearch_conversation_leave" description="Inject Search bar" execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#$#]]></find>
+      <replace><![CDATA[<xen:container var="$searchBar.conversation"><xen:include template="search_bar_conversation_only" /></xen:container>
+<xen:container var="$searchBar.conversations"><xen:include template="search_bar_conversations_only" /></xen:container>]]></replace>
+    </modification>
+    <modification template="conversation_list" modification_key="SV_ConversationSearch_conversation_list" description="Inject Search bar" execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#$#]]></find>
+      <replace><![CDATA[<xen:container var="$searchBar.conversations"><xen:include template="search_bar_conversations_only" /></xen:container>]]></replace>
+    </modification>
+    <modification template="conversation_reply" modification_key="SV_ConversationSearch_conversation_reply" description="Inject Search bar" execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#$#]]></find>
+      <replace><![CDATA[<xen:container var="$searchBar.conversation"><xen:include template="search_bar_conversation_only" /></xen:container>
+<xen:container var="$searchBar.conversations"><xen:include template="search_bar_conversations_only" /></xen:container>]]></replace>
+    </modification>
+    <modification template="conversation_toggle_read" modification_key="SV_ConversationSearch_conversation_toggle_read" description="Inject Search bar" execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#$#]]></find>
+      <replace><![CDATA[<xen:container var="$searchBar.conversation"><xen:include template="search_bar_conversation_only" /></xen:container>
+<xen:container var="$searchBar.conversations"><xen:include template="search_bar_conversations_only" /></xen:container>]]></replace>
+    </modification>
+    <modification template="conversation_toggle_starred" modification_key="SV_ConversationSearch_conversation_toggle_starred" description="Inject Search bar" execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#$#]]></find>
+      <replace><![CDATA[<xen:container var="$searchBar.conversation"><xen:include template="search_bar_conversation_only" /></xen:container>
+<xen:container var="$searchBar.conversations"><xen:include template="search_bar_conversations_only" /></xen:container>]]></replace>
+    </modification>
+    <modification template="conversation_view" modification_key="SV_ConversationSearch_conversation_view" description="Inject Search bar" execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#$#]]></find>
+      <replace><![CDATA[<xen:container var="$searchBar.conversation"><xen:include template="search_bar_conversation_only" /></xen:container>
+<xen:container var="$searchBar.conversations"><xen:include template="search_bar_conversations_only" /></xen:container>]]></replace>
+    </modification>
+    <modification template="search_bar" modification_key="SV_ConversationSearch_search_bar" description="Add Quick Conversation search" execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#(\s*)(</xen:if>\s*<!-- end block: useful_searches -->)#s]]></find>
+      <replace><![CDATA[$1<li><a href="{xen:link search/member, '', 'user_id={$visitor.user_id}', 'content=conversation_message'}">{xen:phrase your_conversation_messages}</a></li>$1$2]]></replace>
+    </modification>
+    <modification template="search_form_tabs" modification_key="SV_ConversationSearch_search_form_tabs_1" description="Inject Search Tab" execution_order="10" enabled="1" action="preg_replace">
       <find><![CDATA[#(<xen\:hook name\="search_form_tabs".*?)(\s*)(<li{xen:if "{\$searchType}.*?)(\s*</xen\:hook>)#si]]></find>
       <replace><![CDATA[$1$2$3$2<li{xen:if "{$searchType} == 'conversation_message'", ' class="active"'}><a href="{xen:link search, '', 'type=conversation_message'}">{xen:phrase search_conversations}</a></li>
 $4]]></replace>
