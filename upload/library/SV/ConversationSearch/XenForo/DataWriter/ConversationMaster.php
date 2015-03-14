@@ -15,7 +15,7 @@ class SV_ConversationSearch_XenForo_DataWriter_ConversationMaster extends XFCP_S
     {
         if ($this->_firstMessageDw)
         {
-            $this->_firstMessageDw->setOption(SV_ConversationSearch_Search_DataHandler_ConversationMessage::OPTION_INDEX_FOR_SEARCH, false);
+            $this->_firstMessageDw->setOption(self::OPTION_INDEX_FOR_SEARCH, false);
         }
 
         parent::_postSave();
