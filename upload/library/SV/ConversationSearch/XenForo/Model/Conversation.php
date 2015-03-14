@@ -35,22 +35,50 @@ class SV_ConversationSearch_XenForo_Model_Conversation extends XFCP_SV_Conversat
 
     public function getConversationsByIds($conversationIds, $user_id = 0)
     {
+        $select = '';
+        $join = '';
+        if (!empty($user_id))
+        {
+            $select .= ', recipient.recipient_state, recipient.last_read_date, message.message ';
+            $join .= 'LEFT JOIN xf_conversation_recipient as recipient ON conversation_master.conversation_id = recipient.conversation_id and recipient.user_id = '.$this->_getDb()->quote($user_id) .' ';
+
+            $select .= ', user.*, IF(user.username IS NULL, conversation_master.username, user.username) AS username,
+                user_profile.* ';
+
+            $join .= '
+            LEFT JOIN xf_user AS user ON
+                (user.user_id = conversation_master.user_id)
+            LEFT JOIN xf_user_profile AS user_profile ON
+                (user_profile.user_id = conversation_master.user_id) 
+            JOIN xf_conversation_message AS message ON 
+                (message.message_id = conversation_master.first_message_id)
+            ';
+        }
+
         return $this->fetchAllKeyed('
-            SELECT conversation_master.*, recipient.*
+            SELECT conversation_master.* '. $select .'
             FROM xf_conversation_master AS conversation_master
-            LEFT JOIN xf_conversation_recipient as recipient ON conversation_master.conversation_id = recipient.conversation_id
-            WHERE conversation_master.conversation_id IN (' . $this->_getDb()->quote($conversationIds) . ') and recipient.user_id = ?
-        ', 'conversation_id', $user_id);
+            '. $join .'
+            WHERE conversation_master.conversation_id IN (' . $this->_getDb()->quote($conversationIds) . ')
+        ', 'conversation_id');
     }
 
     public function getConversationById($conversationId, $user_id = 0)
     {
+        $select = '';
+        $join = '';
+        if (!empty($user_id))
+        {
+            $select .= ', recipient.recipient_state, recipient.last_read_date ';
+            $join .= 'LEFT JOIN xf_conversation_recipient as recipient ON conversation_master.conversation_id = recipient.conversation_id and recipient.user_id = '.$this->_getDb()->quote($user_id) .' ';
+        }
+
         return $this->_getDb()->fetchRow('
-            SELECT conversation_master.*, recipient.*
+            SELECT conversation_master.* '. $select .'
             FROM xf_conversation_master AS conversation_master
-            LEFT JOIN xf_conversation_recipient as recipient ON conversation_master.conversation_id = recipient.conversation_id
-            WHERE conversation_master.conversation_id = ? and recipient.user_id = ?
-        ', array($conversationId,$user_id));
+            '. $join .'
+            WHERE conversation_master.conversation_id = ?
+        ', $conversationId);
     }
 
     public function canViewConversation(array $conversation, &$errorPhraseKey = '', array $viewingUser = null)

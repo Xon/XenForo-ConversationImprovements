@@ -36,8 +36,6 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
                 }
             }
 
-            $metadata['starter_user_id'] = $conversation['user_id'];
-
             $recipients = array();
             if ($conversation['recipients'])
             {
@@ -120,7 +118,6 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
         }
 
         $conversations = $this->_getConversationModel()->getConversationsByIds(array_unique($conversationIds));
-
         foreach ($messages AS $message)
         {
             $conversation = (isset($conversations[$message['conversation_id']]) ? $conversations[$message['conversation_id']] : null);
@@ -409,7 +406,7 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
     public function getJoinStructures(array $tables)
     {
         $structures = array();
-        if (isset($tables['thread']))
+        if (isset($tables['conversation']))
         {
             $structures['conversation'] = array(
                 'table' => 'xf_conversation_master',

@@ -25,8 +25,6 @@ class SV_ConversationSearch_Search_DataHandler_Conversation extends XenForo_Sear
             $metadata['prefix'] = $data['prefix_id'];
         }
 
-        $metadata['starter_user_id'] = $data['user_id'];
-
         $recipients = array();
         if ($data['recipients'])
         {

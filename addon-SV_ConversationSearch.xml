@@ -31,7 +31,6 @@
   <style_properties/>
   <templates>
     <template title="search_result_conversation" version_id="1" version_string="0.01"><![CDATA[<li id="conversation-{$conversation.conversation_id}" class="searchResult conversation primaryContent{xen:if $conversation.isIgnored, ' ignored'}" data-author="{$conversation.username}">
-
 	<div class="listBlock posterAvatar"><xen:avatar user="$conversation" size="s" img="true" /></div>
 
 	<div class="listBlock main">
@@ -51,11 +50,9 @@
 			{xen:phrase x_replies, 'count={xen:number $conversation.reply_count}'}</a>
 		</div>
 	</div>
-
 </li>]]></template>
     <template title="search_result_conversation_message" version_id="1" version_string="0.01"><![CDATA[<li id="conversation_message-{$conversation_message.message_id}" class="searchResult conversation_message primaryContent{xen:if $conversation_message.isIgnored, ' ignored'}" data-author="{$conversation_message.username}">
-
-	<div class="listBlock conversation_messageerAvatar"><xen:avatar user="$conversation_message" size="s" img="true" /></div>
+	<div class="listBlock posterAvatar"><xen:avatar user="$conversation_message" size="s" img="true" /></div>
 
 	<div class="listBlock main">
 		<div class="titleText">
