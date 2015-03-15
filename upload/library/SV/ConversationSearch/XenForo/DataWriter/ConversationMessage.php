@@ -36,7 +36,9 @@ class SV_ConversationSearch_XenForo_DataWriter_ConversationMessage extends XFCP_
 
         $viewingUser = XenForo_Visitor::getInstance()->toArray();
         $conversationModel = $this->_getConversationModel();
-        $conversation = $conversationModel->getConversationById($this->get('conversation_id'), $viewingUser['user_id']);
+        $conversation_id = $this->get('conversation_id');
+        $conversations = $conversationModel->getConversationsByIds($conversation_id);
+        $conversation = isset($conversations[$conversation_id]) ? $conversations[$this->get('conversation_id')] : null;
 
         $indexer = new XenForo_Search_Indexer();
         $dataHandler->insertIntoIndex($indexer, $this->getMergedData(), $conversation);

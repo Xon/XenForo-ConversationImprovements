@@ -27,9 +27,9 @@ class SV_ConversationSearch_Search_DataHandler_Conversation extends XenForo_Sear
 
         if (!isset($data['all_recipients']))
         {
-            $data['all_recipients'] = $this->_getConversationModel()->getConversationRecipientsForIndexing($data['conversation_id']);
+            $data['all_recipients'] = $this->_getConversationModel()->getConversationRecipients($data['conversation_id']);
         }
-        $metadata['recipients'] = $data['all_recipients'];
+        $metadata['recipients'] = array_keys($data['all_recipients']);
 
         $indexer->insertIntoIndex(
             'conversation', $data['conversation_id'],
@@ -111,7 +111,7 @@ class SV_ConversationSearch_Search_DataHandler_Conversation extends XenForo_Sear
      */
     public function getDataForResults(array $ids, array $viewingUser, array $resultsGrouped)
     {
-        return $this->_getConversationModel()->getConversationsByIds(array_unique($ids), $viewingUser['user_id']);
+        return $this->_getConversationModel()->getConversationsForUserByIdsWithMessage($viewingUser['user_id'], array_unique($ids));
     }
 
     /**

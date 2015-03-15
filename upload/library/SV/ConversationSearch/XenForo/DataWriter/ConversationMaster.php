@@ -42,7 +42,7 @@ class SV_ConversationSearch_XenForo_DataWriter_ConversationMaster extends XFCP_S
 
         $indexer = new XenForo_Search_Indexer();
         $dataHandler->insertIntoIndex($indexer, $this->getMergedData(), null);
-        
+
         if ($this->_firstMessageDw)
         {
             $dataHandler = $this->_getSearchDataHandlerForMessage();
@@ -66,7 +66,7 @@ class SV_ConversationSearch_XenForo_DataWriter_ConversationMaster extends XFCP_S
         $indexer = new XenForo_Search_Indexer();
         $dataHandler->insertIntoIndex($indexer, $this->_firstMessageDw->getMergedData(), $this->getMergedData());
     }
-    
+
     protected function _deleteFromSearchIndex()
     {
         $dataHandler = $this->_getSearchDataHandler();

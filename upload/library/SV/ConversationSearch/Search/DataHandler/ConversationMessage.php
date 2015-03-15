@@ -39,9 +39,9 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
 
             if (!isset($conversation['all_recipients']))
             {
-                $conversation['all_recipients'] = $this->_getConversationModel()->getConversationRecipientsForIndexing($conversation['conversation_id']);
+                $conversation['all_recipients'] = $this->_getConversationModel()->getConversationRecipients($conversation['conversation_id']);
             }
-            $metadata['recipients'] = $conversation['all_recipients'];
+            $metadata['recipients'] = array_keys($conversation['all_recipients']);
         }
 
         $metadata['conversation'] = $data['conversation_id'];
@@ -116,7 +116,7 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
         $conversations = $this->_getConversationModel()->getConversationsByIds(array_unique($conversationIds));
         foreach ($conversations AS $conversation_id => $conversation)
         {
-            $conversations[$conversation_id]['all_recipients'] = $this->_getConversationModel()->getConversationRecipientsForIndexing($conversation_id);
+            $conversations[$conversation_id]['all_recipients'] = $this->_getConversationModel()->getConversationRecipients($conversation_id);
         }
 
         foreach ($messages AS $message)
@@ -156,7 +156,7 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
             $conversationIds[] = $message['conversation_id'];
         }
 
-        $conversations = $conversationModel->getConversationsByIds(array_unique($conversationIds), $viewingUser['user_id']);
+        $conversations = $conversationModel->getConversationsForUserByIds($viewingUser['user_id'], array_unique($conversationIds));
 
         foreach ($messages AS $messageId => &$message)
         {
@@ -395,7 +395,7 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
             $conversationModel = $this->_getConversationModel();
             $viewingUser = XenForo_Visitor::getInstance()->toArray();
 
-            $conversation = $conversationModel->getConversationById($params['conversation'], $viewingUser['user_id']);
+            $conversation = $conversationModel->getConversationForUser($params['conversation'], $viewingUser);
 
             if ($conversation )
             {
