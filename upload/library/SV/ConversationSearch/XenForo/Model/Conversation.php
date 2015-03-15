@@ -2,6 +2,15 @@
 
 class SV_ConversationSearch_XenForo_Model_Conversation extends XFCP_SV_ConversationSearch_XenForo_Model_Conversation
 {
+	public function getConversationRecipientsForIndexing($conversationId)
+	{
+		return $this->_getDb()->fetchCol('
+			SELECT conversation_recipient.user_id
+			FROM xf_conversation_recipient AS conversation_recipient
+			WHERE conversation_recipient.conversation_id = ?
+		', $conversationId);
+	}
+
     public function getConversationMessagesByIds($messageIds, array $fetchOptions = array())
     {
         $joinOptions = $this->prepareMessageFetchOptions($fetchOptions);

@@ -25,17 +25,11 @@ class SV_ConversationSearch_Search_DataHandler_Conversation extends XenForo_Sear
             $metadata['prefix'] = $data['prefix_id'];
         }
 
-        $recipients = array();
-        $recipients[] = $data['user_id'];
-        if ($data['recipients'])
+        if (!isset($data['all_recipients']))
         {
-            $recipientNames = $data['recipients'] ? @unserialize($data['recipients']) : array();
-            foreach($recipientNames as $recipientName)
-            {
-                $recipients[] = $recipientName['user_id'];
-            }
+            $data['all_recipients'] = $this->_getConversationModel()->getConversationRecipientsForIndexing($data['conversation_id']);
         }
-        $metadata['recipients'] = $recipients;
+        $metadata['recipients'] = $data['all_recipients'];
 
         $indexer->insertIntoIndex(
             'conversation', $data['conversation_id'],

@@ -37,17 +37,11 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
                 }
             }
 
-            $recipients = array();
-            $recipients[] = $conversation['user_id'];
-            if ($conversation['recipients'])
+            if (!isset($conversation['all_recipients']))
             {
-                $recipientNames = $conversation['recipients'] ? @unserialize($conversation['recipients']) : array();
-                foreach($recipientNames as $recipientName)
-                {
-                    $recipients[] = $recipientName['user_id'];
-                }
+                $conversation['all_recipients'] = $this->_getConversationModel()->getConversationRecipientsForIndexing($conversation['conversation_id']);
             }
-            $metadata['recipients'] = $recipients;
+            $metadata['recipients'] = $conversation['all_recipients'];
         }
 
         $metadata['conversation'] = $data['conversation_id'];
@@ -120,6 +114,11 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
         }
 
         $conversations = $this->_getConversationModel()->getConversationsByIds(array_unique($conversationIds));
+        foreach ($conversations AS $conversation_id => $conversation)
+        {
+            $conversations[$conversation_id]['all_recipients'] = $this->_getConversationModel()->getConversationRecipientsForIndexing($conversation_id);
+        }
+
         foreach ($messages AS $message)
         {
             $conversation = (isset($conversations[$message['conversation_id']]) ? $conversations[$message['conversation_id']] : null);
