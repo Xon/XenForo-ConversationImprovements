@@ -279,7 +279,14 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
             $constraints['recipients'] = array_keys($users);
         }
 
+        $this->EnforceUserAccess($constraints);
+
         return $constraints;
+    }
+
+    protected function EnforceUserAccess(array &$constraints)
+    {
+        $constraints['require_recipient'] = XenForo_Visitor::getUserId();
     }
 
     /**
@@ -319,6 +326,13 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
                     );
                 }
                 break;
+            case 'require_recipient':
+                if ($constraintInfo)
+                {
+                    return array(
+                       'metadata' => array('recipients', $constraintInfo)
+                    );
+                }
             case 'recipients':
                 if ($constraintInfo)
                 {
