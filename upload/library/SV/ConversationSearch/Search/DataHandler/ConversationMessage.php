@@ -2,6 +2,15 @@
 
 class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenForo_Search_DataHandler_Abstract
 {
+    var $enabled = false;
+
+    public function __construct()
+    {
+        // use the proxy class existence as a cheap check for if this addon is enabled.
+        $this->_getConversationModel();
+        $this->enabled = class_exists('XFCP_SV_ConversationSearch_XenForo_Model_Conversation', false);
+    }
+
     protected $_conversationModel = null;
     protected $_userModel = null;
 
@@ -12,6 +21,8 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
      */
     protected function _insertIntoIndex(XenForo_Search_Indexer $indexer, array $data, array $parentData = null)
     {
+        if (!($this->enabled)) return;
+
         //if ($data['message_state'] != 'visible')
         //{
         //    return;
@@ -60,6 +71,7 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
      */
     protected function _updateIndex(XenForo_Search_Indexer $indexer, array $data, array $fieldUpdates)
     {
+        if (!($this->enabled)) return;
         $indexer->updateIndex('conversation_message', $data['message_id'], $fieldUpdates);
     }
 
@@ -70,6 +82,7 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
      */
     protected function _deleteFromIndex(XenForo_Search_Indexer $indexer, array $dataList)
     {
+        if (!($this->enabled)) return;
         $conversationIds = array();
         foreach ($dataList AS $data)
         {
@@ -86,6 +99,7 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
      */
     public function rebuildIndex(XenForo_Search_Indexer $indexer, $lastId, $batchSize)
     {
+        if (!($this->enabled)) return false;
         $conversationIds = $this->_getConversationModel()->getConversationMessageIdsInRange($lastId, $batchSize);
         if (!$conversationIds)
         {
@@ -104,6 +118,7 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
      */
     public function quickIndex(XenForo_Search_Indexer $indexer, array $contentIds)
     {
+        if (!($this->enabled)) return false;
         $messages = $this->_getConversationModel()->getConversationMessagesByIds($contentIds, array(
         ));
 
@@ -145,6 +160,7 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
      */
     public function getDataForResults(array $ids, array $viewingUser, array $resultsGrouped)
     {
+        if (!($this->enabled)) return array();
         $conversationModel = $this->_getConversationModel();
 
         $messages = $conversationModel->getConversationMessagesByIds($ids, array(
@@ -178,6 +194,7 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
      */
     public function canViewResult(array $result, array $viewingUser)
     {
+        if (!($this->enabled)) return false;
         return $this->_getConversationModel()->canViewConversation($result['conversation'], $viewingUser);
     }
 
@@ -188,6 +205,7 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
      */
     public function prepareResult(array $result, array $viewingUser)
     {
+        if (!($this->enabled)) return $result;
         $result = $this->_getConversationModel()->prepareMessage($result, $result['conversation']);
         $result['title'] = XenForo_Helper_String::censorString($result['conversation']['title']);
 
@@ -242,6 +260,7 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
      */
     public function getTypeConstraintsFromInput(XenForo_Input $input)
     {
+        if (!($this->enabled)) return array();
         $constraints = array();
 
         $replyCount = $input->filterSingle('reply_count', XenForo_Input::UINT);
@@ -295,6 +314,7 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
      */
     public function processConstraint(XenForo_Search_SourceHandler_Abstract $sourceHandler, $constraint, $constraintInfo, array $constraints)
     {
+        if (!($this->enabled)) return array();
         switch ($constraint)
         {
             case 'reply_count':
@@ -352,6 +372,7 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
      */
     public function getSearchFormControllerResponse(XenForo_ControllerPublic_Abstract $controller, XenForo_Input $input, array $viewParams)
     {
+        if (!($this->enabled)) return null;
         $params = $input->filterSingle('c', XenForo_Input::ARRAY_SIMPLE);
 
         $viewParams['search']['reply_count'] = empty($params['reply_count']) ? '' : $params['reply_count'];
@@ -434,6 +455,7 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
      */
     public function getJoinStructures(array $tables)
     {
+        if (!($this->enabled)) return array();
         $structures = array();
         if (isset($tables['conversation']))
         {

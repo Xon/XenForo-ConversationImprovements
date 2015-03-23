@@ -2,6 +2,15 @@
 
 class SV_ConversationSearch_Search_DataHandler_Conversation extends XenForo_Search_DataHandler_Abstract
 {
+    var $enabled = false;
+
+    public function __construct()
+    {
+        // use the proxy class existence as a cheap check for if this addon is enabled.
+        $this->_getConversationModel();
+        $this->enabled = class_exists('XFCP_SV_ConversationSearch_XenForo_Model_Conversation', false);
+    }
+
     protected $_conversationModel = null;
 
     /**
@@ -11,6 +20,7 @@ class SV_ConversationSearch_Search_DataHandler_Conversation extends XenForo_Sear
      */
     protected function _insertIntoIndex(XenForo_Search_Indexer $indexer, array $data, array $parentData = null)
     {
+        if (!($this->enabled)) return;
         //$threadModel = $this->_getThreadModel();
 
         //if ($threadModel->isRedirect($data) || !$threadModel->isVisible($data))
@@ -45,6 +55,7 @@ class SV_ConversationSearch_Search_DataHandler_Conversation extends XenForo_Sear
      */
     protected function _updateIndex(XenForo_Search_Indexer $indexer, array $data, array $fieldUpdates)
     {
+        if (!($this->enabled)) return;
         $indexer->updateIndex('conversation', $data['conversation_id'], $fieldUpdates);
     }
 
@@ -55,6 +66,7 @@ class SV_ConversationSearch_Search_DataHandler_Conversation extends XenForo_Sear
      */
     protected function _deleteFromIndex(XenForo_Search_Indexer $indexer, array $dataList)
     {
+        if (!($this->enabled)) return;
         $conversationIds = array();
         foreach ($dataList AS $data)
         {
@@ -71,6 +83,7 @@ class SV_ConversationSearch_Search_DataHandler_Conversation extends XenForo_Sear
      */
     public function rebuildIndex(XenForo_Search_Indexer $indexer, $lastId, $batchSize)
     {
+        if (!($this->enabled)) return false;
         $conversationIds = $this->_getConversationModel()->getConversationIdsInRange($lastId, $batchSize);
         if (!$conversationIds)
         {
@@ -89,6 +102,7 @@ class SV_ConversationSearch_Search_DataHandler_Conversation extends XenForo_Sear
      */
     public function quickIndex(XenForo_Search_Indexer $indexer, array $contentIds)
     {
+        if (!($this->enabled)) return false;
         $conversations = $this->_getConversationModel()->getConversationsByIds($contentIds);
 
         foreach ($conversations AS $conversation)
@@ -111,6 +125,7 @@ class SV_ConversationSearch_Search_DataHandler_Conversation extends XenForo_Sear
      */
     public function getDataForResults(array $ids, array $viewingUser, array $resultsGrouped)
     {
+        if (!($this->enabled)) return array();
         return $this->_getConversationModel()->getConversationsForUserByIdsWithMessage($viewingUser['user_id'], array_unique($ids));
     }
 
@@ -121,6 +136,7 @@ class SV_ConversationSearch_Search_DataHandler_Conversation extends XenForo_Sear
      */
     public function canViewResult(array $result, array $viewingUser)
     {
+        if (!($this->enabled)) return false;
         return $this->_getConversationModel()->canViewConversation($result, $viewingUser);
     }
 
@@ -131,6 +147,7 @@ class SV_ConversationSearch_Search_DataHandler_Conversation extends XenForo_Sear
      */
     public function prepareResult(array $result, array $viewingUser)
     {
+        if (!($this->enabled)) return $result;
         return $this->_getConversationModel()->prepareConversation($result);
     }
 
@@ -156,6 +173,7 @@ class SV_ConversationSearch_Search_DataHandler_Conversation extends XenForo_Sear
      */
     public function renderResult(XenForo_View $view, array $result, array $search)
     {
+        if (!($this->enabled)) return null;
         return $view->createTemplateObject('search_result_conversation', array(
             'conversation' => $result,
             'conversation_message' => $result,
