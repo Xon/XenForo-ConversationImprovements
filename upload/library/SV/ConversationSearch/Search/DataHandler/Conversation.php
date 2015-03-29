@@ -37,7 +37,7 @@ class SV_ConversationSearch_Search_DataHandler_Conversation extends XenForo_Sear
 
         if (!isset($data['all_recipients']))
         {
-            $data['all_recipients'] = $this->_getConversationModel()->getConversationRecipients($data['conversation_id']);
+            $data['all_recipients'] = $this->_getConversationModel()->getConversationRecipientsForSearch($data['conversation_id']);
         }
         $metadata['recipients'] = array_keys($data['all_recipients']);
 

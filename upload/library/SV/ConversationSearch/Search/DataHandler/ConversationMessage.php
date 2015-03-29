@@ -50,7 +50,7 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
 
             if (!isset($conversation['all_recipients']))
             {
-                $conversation['all_recipients'] = $this->_getConversationModel()->getConversationRecipients($conversation['conversation_id']);
+                $conversation['all_recipients'] = $this->_getConversationModel()->getConversationRecipientsForSearch($conversation['conversation_id']);
             }
             $metadata['recipients'] = array_keys($conversation['all_recipients']);
         }
@@ -131,7 +131,7 @@ class SV_ConversationSearch_Search_DataHandler_ConversationMessage extends XenFo
         $conversations = $this->_getConversationModel()->getConversationsByIds(array_unique($conversationIds));
         foreach ($conversations AS $conversation_id => $conversation)
         {
-            $conversations[$conversation_id]['all_recipients'] = $this->_getConversationModel()->getConversationRecipients($conversation_id);
+            $conversations[$conversation_id]['all_recipients'] = $this->_getConversationModel()->getConversationRecipientsForSearch($conversation_id);
         }
 
         foreach ($messages AS $message)

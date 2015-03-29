@@ -72,6 +72,16 @@ class SV_ConversationSearch_XenForo_Model_Conversation extends XFCP_SV_Conversat
         ', 'conversation_id', $userId);
     }
 
+	public function getConversationRecipientsForSearch($conversationId)
+	{
+		return $this->fetchAllKeyed('
+			SELECT conversation_recipient.*
+			FROM xf_conversation_recipient AS conversation_recipient
+			WHERE conversation_recipient.conversation_id = ?
+            order by conversation_recipient.user_id
+		', 'user_id', $conversationId);
+	}
+
     public function canViewConversation(array $conversation, &$errorPhraseKey = '', array $viewingUser = null)
     {
         $this->standardizeViewingUserReference($viewingUser);
@@ -83,7 +93,7 @@ class SV_ConversationSearch_XenForo_Model_Conversation extends XFCP_SV_Conversat
 
         if (!isset($conversation['all_recipients']))
         {
-            $conversation['all_recipients'] = $this->getConversationRecipients($conversation['conversation_id']);
+            $conversation['all_recipients'] = $this->getConversationRecipientsForSearch($conversation['conversation_id']);
         }
 
         return isset($conversation['all_recipients'][$viewingUser['user_id']]);
