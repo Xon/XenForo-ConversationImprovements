@@ -19,6 +19,11 @@ class SV_ConversationSearch_XenForo_DataWriter_ConversationMaster extends XFCP_S
         }
 
         parent::_postSave();
+    }
+
+    protected function _postSaveAfterTransaction()
+    {
+        parent::_postSaveAfterTransaction();
 
         if ($this->getOption(self::OPTION_INDEX_FOR_SEARCH))
         {
@@ -26,9 +31,10 @@ class SV_ConversationSearch_XenForo_DataWriter_ConversationMaster extends XFCP_S
         }
     }
 
-    protected function _postDelete()
+    public function delete()
     {
-        parent::_postDelete();
+        parent::delete();
+        // update search index outside the transaction
         $this->_deleteFromSearchIndex();
     }
 
@@ -40,8 +46,11 @@ class SV_ConversationSearch_XenForo_DataWriter_ConversationMaster extends XFCP_S
             return;
         }
 
-        $indexer = new XenForo_Search_Indexer();
-        $dataHandler->insertIntoIndex($indexer, $this->getMergedData(), null);
+        if ($this->isInsert() || $this->isUpdate() && ($this->isChanged('recipients') || $this->isChanged('title')))
+        {
+            $indexer = new XenForo_Search_Indexer();
+            $dataHandler->insertIntoIndex($indexer, $this->getMergedData(), null);
+        }
 
         if ($this->_firstMessageDw)
         {

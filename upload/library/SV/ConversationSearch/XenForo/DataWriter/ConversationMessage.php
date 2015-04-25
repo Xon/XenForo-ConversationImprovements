@@ -11,18 +11,19 @@ class SV_ConversationSearch_XenForo_DataWriter_ConversationMessage extends XFCP_
         return $defaultOptions;
     }
 
-    protected function _postSave()
+    protected function _postSaveAfterTransaction()
     {
-        parent::_postSave();
+        parent::_postSaveAfterTransaction();
         if ($this->getOption(self::OPTION_INDEX_FOR_SEARCH))
         {
             $this->_insertIntoSearchIndex();
         }
     }
 
-    protected function _postDelete()
+    public function delete()
     {
-        parent::_postDelete();
+        parent::delete();
+        // update search index outside the transaction
         $this->_deleteFromSearchIndex();
     }
 
