@@ -25,6 +25,8 @@ class SV_ConversationSearch_Listener
 
     public static function uninstall()
     {
+        $db = XenForo_Application::getDb();
+
         $db->query("
             DELETE FROM xf_content_type_field
             WHERE xf_content_type_field.field_value in ('SV_ConversationSearch_Search_DataHandler_Conversation','SV_ConversationSearch_Search_DataHandler_ConversationMessage')
