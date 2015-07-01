@@ -68,14 +68,6 @@ class SV_ConversationSearch_XenForo_DataWriter_ConversationMaster extends XFCP_S
         }
     }
 
-    protected function _insertOrUpdateMessageSearchIndex()
-    {
-        $dataHandler = new Waindigo_ConvSearch_Search_DataHandler_ConversationMessage();
-
-        $indexer = new XenForo_Search_Indexer();
-        $dataHandler->insertIntoIndex($indexer, $this->_firstMessageDw->getMergedData(), $this->getMergedData());
-    }
-
     protected function _deleteFromSearchIndex()
     {
         $dataHandler = $this->_getSearchDataHandler();
