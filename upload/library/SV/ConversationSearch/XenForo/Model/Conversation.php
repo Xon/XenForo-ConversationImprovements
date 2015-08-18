@@ -2,6 +2,16 @@
 
 class SV_ConversationSearch_XenForo_Model_Conversation extends XFCP_SV_ConversationSearch_XenForo_Model_Conversation
 {
+    public function rebuildUnreadConversationCountForUser($userId)
+    {
+        if (SV_ConversationSearch_Globals::$UsersToUpdate !== null)
+        {
+            SV_ConversationSearch_Globals::$UsersToUpdate[] = $userId;
+            return;
+        }
+        parent::rebuildUnreadConversationCountForUser($userId);
+    }
+
     public function getConversationMessagesByIds($messageIds, array $fetchOptions = array())
     {
         $joinOptions = $this->prepareMessageFetchOptions($fetchOptions);

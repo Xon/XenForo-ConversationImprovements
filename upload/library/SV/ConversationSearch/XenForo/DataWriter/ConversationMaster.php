@@ -18,11 +18,24 @@ class SV_ConversationSearch_XenForo_DataWriter_ConversationMaster extends XFCP_S
             $this->_firstMessageDw->setOption(self::OPTION_INDEX_FOR_SEARCH, false);
         }
 
+        SV_ConversationSearch_Globals::$UsersToUpdate = array();
+
         parent::_postSave();
     }
 
     protected function _postSaveAfterTransaction()
     {
+        if (SV_ConversationSearch_Globals::$UsersToUpdate !== null)
+        {
+            $convModel = $this->_getConversationModel();
+            $userIds = SV_ConversationSearch_Globals::$UsersToUpdate;
+            SV_ConversationSearch_Globals::$UsersToUpdate = null;
+            foreach($userIds as $userId)
+            {
+                $convModel->rebuildUnreadConversationCountForUser($userId);
+            }
+        }
+
         parent::_postSaveAfterTransaction();
 
         if ($this->getOption(self::OPTION_INDEX_FOR_SEARCH))
