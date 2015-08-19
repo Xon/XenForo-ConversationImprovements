@@ -1,6 +1,6 @@
 <?php
 
-class SV_ConversationSearch_XenForo_DataWriter_ConversationMaster extends XFCP_SV_ConversationSearch_XenForo_DataWriter_ConversationMaster
+class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends XFCP_SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster
 {
     const OPTION_INDEX_FOR_SEARCH = 'indexForSearch';
 
@@ -18,18 +18,18 @@ class SV_ConversationSearch_XenForo_DataWriter_ConversationMaster extends XFCP_S
             $this->_firstMessageDw->setOption(self::OPTION_INDEX_FOR_SEARCH, false);
         }
 
-        SV_ConversationSearch_Globals::$UsersToUpdate = array();
+        SV_ConversationImprovements_Globals::$UsersToUpdate = array();
 
         parent::_postSave();
     }
 
     protected function _postSaveAfterTransaction()
     {
-        if (SV_ConversationSearch_Globals::$UsersToUpdate !== null)
+        if (SV_ConversationImprovements_Globals::$UsersToUpdate !== null)
         {
             $convModel = $this->_getConversationModel();
-            $userIds = SV_ConversationSearch_Globals::$UsersToUpdate;
-            SV_ConversationSearch_Globals::$UsersToUpdate = null;
+            $userIds = SV_ConversationImprovements_Globals::$UsersToUpdate;
+            SV_ConversationImprovements_Globals::$UsersToUpdate = null;
             foreach($userIds as $userId)
             {
                 $convModel->rebuildUnreadConversationCountForUser($userId);
@@ -111,12 +111,12 @@ class SV_ConversationSearch_XenForo_DataWriter_ConversationMaster extends XFCP_S
 
     protected function _getSearchDataHandler()
     {
-        return XenForo_Search_DataHandler_Abstract::create('SV_ConversationSearch_Search_DataHandler_Conversation');
+        return XenForo_Search_DataHandler_Abstract::create('SV_ConversationImprovements_Search_DataHandler_Conversation');
     }
 
     public function _getSearchDataHandlerForMessage()
     {
-        return XenForo_Search_DataHandler_Abstract::create('SV_ConversationSearch_Search_DataHandler_ConversationMessage');
+        return XenForo_Search_DataHandler_Abstract::create('SV_ConversationImprovements_Search_DataHandler_ConversationMessage');
     }
 
     protected function _getConversationModel()

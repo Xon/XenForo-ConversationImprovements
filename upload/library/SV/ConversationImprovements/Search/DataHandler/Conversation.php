@@ -1,6 +1,6 @@
 <?php
 
-class SV_ConversationSearch_Search_DataHandler_Conversation extends XenForo_Search_DataHandler_Abstract
+class SV_ConversationImprovements_Search_DataHandler_Conversation extends XenForo_Search_DataHandler_Abstract
 {
     var $enabled = false;
 
@@ -8,7 +8,7 @@ class SV_ConversationSearch_Search_DataHandler_Conversation extends XenForo_Sear
     {
         // use the proxy class existence as a cheap check for if this addon is enabled.
         $this->_getConversationModel();
-        $this->enabled = class_exists('XFCP_SV_ConversationSearch_XenForo_Model_Conversation', false);
+        $this->enabled = class_exists('XFCP_SV_ConversationImprovements_XenForo_Model_Conversation', false);
     }
 
     protected $_conversationModel = null;
@@ -25,7 +25,7 @@ class SV_ConversationSearch_Search_DataHandler_Conversation extends XenForo_Sear
 
         //if ($threadModel->isRedirect($data) || !$threadModel->isVisible($data))
         //{
-        //	return;
+        //  return;
         //}
 
         $metadata = array();

@@ -1,9 +1,17 @@
 XenForo-ConversationImprovements
 ======================
 
-A collection of improvments to the XenForo Conversation system.
+A collection of improvements to the XenForo Conversation system.
 
-Adds conversation search, with options to search by recipient.
+Features:
+- Deadlock workaround.
+- Adds conversation search, with options to search by recipient.
+- New Conversation Permissions
+
+### Deadlock workaround
+Fixes an issue where updating conversation counters can cause deadlocks
+
+### Adds conversation search, with options to search by recipient
 
 Users must be a member of the conversation to see the conversation in search results.
 
@@ -13,7 +21,7 @@ Due to XenForo's design, this addon impacts general 'everything' search as per s
 
 Adds each conversation, and conversation message do the XenForo Search store (MySQL or Elastic Search), which may result in a larger search index.
 
-New Conversation Permissions.
+### New Conversation Permissions
 
 Just takes away a user's "reply" button, no banners.
 
@@ -25,7 +33,7 @@ User B can have a reply limit of 10.
 Once the conversation has >5 replies, User A can no longer post.
 Once the conversation has >10 replies, User A and User B can no longer post.
 
-#Permissions.
+#Permissions
 
 - Can Reply to Conversation.
 - Reply Limit for Conversation.
@@ -33,8 +41,8 @@ Once the conversation has >10 replies, User A and User B can no longer post.
 #Manual post-installation steps
 
 On installing for he first time, please rebuild the Search Index for the following content types:
-•Conversation
-•Conversation Messages
+- Conversation
+- Conversation Messages
 
 #Performance impact
 

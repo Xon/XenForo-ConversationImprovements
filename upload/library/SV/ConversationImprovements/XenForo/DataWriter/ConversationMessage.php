@@ -1,6 +1,6 @@
 <?php
 
-class SV_ConversationSearch_XenForo_DataWriter_ConversationMessage extends XFCP_SV_ConversationSearch_XenForo_DataWriter_ConversationMessage
+class SV_ConversationImprovements_XenForo_DataWriter_ConversationMessage extends XFCP_SV_ConversationImprovements_XenForo_DataWriter_ConversationMessage
 {
     const OPTION_INDEX_FOR_SEARCH = 'indexForSearch';
 
@@ -59,7 +59,7 @@ class SV_ConversationSearch_XenForo_DataWriter_ConversationMessage extends XFCP_
 
     public function _getSearchDataHandler()
     {
-        return XenForo_Search_DataHandler_Abstract::create('SV_ConversationSearch_Search_DataHandler_ConversationMessage');
+        return XenForo_Search_DataHandler_Abstract::create('SV_ConversationImprovements_Search_DataHandler_ConversationMessage');
     }
 
     protected function _getConversationModel()

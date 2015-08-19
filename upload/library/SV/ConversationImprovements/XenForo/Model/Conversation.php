@@ -1,12 +1,12 @@
 <?php
 
-class SV_ConversationSearch_XenForo_Model_Conversation extends XFCP_SV_ConversationSearch_XenForo_Model_Conversation
+class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_ConversationImprovements_XenForo_Model_Conversation
 {
     public function rebuildUnreadConversationCountForUser($userId)
     {
-        if (SV_ConversationSearch_Globals::$UsersToUpdate !== null)
+        if (SV_ConversationImprovements_Globals::$UsersToUpdate !== null)
         {
-            SV_ConversationSearch_Globals::$UsersToUpdate[] = $userId;
+            SV_ConversationImprovements_Globals::$UsersToUpdate[] = $userId;
             return;
         }
         parent::rebuildUnreadConversationCountForUser($userId);
@@ -82,15 +82,15 @@ class SV_ConversationSearch_XenForo_Model_Conversation extends XFCP_SV_Conversat
         ', 'conversation_id', $userId);
     }
 
-	public function getConversationRecipientsForSearch($conversationId)
-	{
-		return $this->fetchAllKeyed('
-			SELECT conversation_recipient.*
-			FROM xf_conversation_recipient AS conversation_recipient
-			WHERE conversation_recipient.conversation_id = ?
+    public function getConversationRecipientsForSearch($conversationId)
+    {
+        return $this->fetchAllKeyed('
+            SELECT conversation_recipient.*
+            FROM xf_conversation_recipient AS conversation_recipient
+            WHERE conversation_recipient.conversation_id = ?
             order by conversation_recipient.user_id
-		', 'user_id', $conversationId);
-	}
+        ', 'user_id', $conversationId);
+    }
 
     public function canViewConversation(array $conversation, &$errorPhraseKey = '', array $viewingUser = null)
     {
@@ -107,5 +107,19 @@ class SV_ConversationSearch_XenForo_Model_Conversation extends XFCP_SV_Conversat
         }
 
         return isset($conversation['all_recipients'][$viewingUser['user_id']]);
+    }
+
+    public function canReplyToConversation(array $conversation, &$errorPhraseKey = '', array $viewingUser = null)
+    {
+        $this->standardizeViewingUserReference($viewingUser);
+
+        if (!XenForo_Permission::hasPermission($viewingUser['permissions'], 'conversation', 'canReply'))
+            return false;
+
+        $replylimit = XenForo_Permission::hasPermission($viewingUser['permissions'], 'conversation', 'replyLimit');
+        if ($replylimit >= 0 && $conversation['reply_count'] >= $replylimit)
+            return false;
+
+        return parent::canReplyToConversation($conversation, $errorPhraseKey, $viewingUser);
     }
 }
