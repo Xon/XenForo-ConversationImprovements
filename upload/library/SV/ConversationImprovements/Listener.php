@@ -8,6 +8,19 @@ class SV_ConversationImprovements_Listener
     {
         $version = isset($existingAddOn['version_id']) ? $existingAddOn['version_id'] : 0;
 
+        $addonModel = XenForo_Model::create("XenForo_Model_AddOn");
+        $addonsToUninstall = array('SV_ConversationSearch', 'SVConversationPermissions');
+        foreach($addonsToUninstall as $addonToUninstall)
+        {
+            $addon = $addonModel->getAddOnById($addonToUninstall);
+            if (!empty($addon))
+            {
+                $dw = XenForo_DataWriter::create('XenForo_DataWriter_AddOn');
+                $dw->setExistingData($addonToUninstall);
+                $dw->delete();
+            }
+        }
+
         $db = XenForo_Application::getDb();
 
         $db->query("
