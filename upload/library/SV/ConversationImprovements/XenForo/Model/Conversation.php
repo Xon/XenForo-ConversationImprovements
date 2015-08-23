@@ -92,6 +92,11 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
         ', 'user_id', $conversationId);
     }
 
+    public function canViewIps(array $conversation, &$errorPhraseKey = '', array $viewingUser = null)
+    {
+        return $this->_getUserModel()->canViewIps($errorPhraseKey, $viewingUser);
+    }
+
     public function canViewConversation(array $conversation, &$errorPhraseKey = '', array $viewingUser = null)
     {
         $this->standardizeViewingUserReference($viewingUser);
