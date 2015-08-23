@@ -41,6 +41,9 @@
   <route_prefixes/>
   <style_properties/>
   <templates>
+    <template title="conversation_private_controls" version_id="10001" version_string="1.0.1"><![CDATA[<xen:if is="{$canViewIps} AND {$message.ip_id}">
+<a href="{xen:link conversations/ip, $conversation, 'm={$message.message_id}'}" class="item control ip OverlayTrigger"><span></span>{xen:phrase ip}</a>
+</xen:if>]]></template>
     <template title="search_bar_conversations_only" version_id="10000" version_string="1.0.0"><![CDATA[<label title="{xen:phrase search_conversations_only}"><input type="checkbox" name="type" value="conversation_message" id="search_bar_conversations" class="Disabler AutoChecker" checked="checked" data-uncheck="#search_bar_conversation" /> {xen:phrase search_conversations_only}</label>]]></template>
     <template title="search_bar_conversation_only" version_id="10000" version_string="1.0.0"><![CDATA[<label title="{xen:phrase search_this_conversation_only}"><input type="checkbox" name="type[conversation_message][conversation_id]" value="{$conversation.conversation_id}" id="search_bar_conversation" class="Disabler AutoChecker" data-uncheck="#search_bar_title_only, #search_bar_conversations" /> {xen:phrase search_this_conversation_only}</label>]]></template>
     <template title="search_form_conversation_message" version_id="10000" version_string="1.0.0"><![CDATA[<xen:title>{xen:phrase search_conversations}</xen:title>
@@ -294,13 +297,10 @@
       <replace><![CDATA[<xen:container var="$searchBar.conversation"><xen:include template="search_bar_conversation_only" /></xen:container>
 <xen:container var="$searchBar.conversations"><xen:include template="search_bar_conversations_only" /></xen:container>]]></replace>
     </modification>
-    <modification template="conversation_message" modification_key="SV_ConversationSearch_message_1" description="Injevt more conversation bits" execution_order="10" enabled="1" action="preg_replace">
-      <find><![CDATA[#(<xen:hook name="conversation_message_private_controls".*?)(\s*)(</xen:hook>)#si]]></find>
-      <replace><![CDATA[$1
-<xen:if is="{$canViewIps} AND {$message.ip_id}">
-<a href="{xen:link conversations/ip, $conversation, 'm={$message.message_id}'}" class="item control ip OverlayTrigger"><span></span>{xen:phrase ip}</a>
-</xen:if>
-$2$3]]></replace>
+    <modification template="conversation_message" modification_key="SV_ConversationSearch_message_1" description="Inject private conversation controls" execution_order="4518" enabled="1" action="preg_replace">
+      <find><![CDATA[#(\s*)(<xen:if is="{\$message.canReport})#si]]></find>
+      <replace><![CDATA[$1<xen:include template="conversation_private_controls" />
+$1$2]]></replace>
     </modification>
     <modification template="search_bar" modification_key="SV_ConversationSearch_search_bar" description="Add Quick Conversation search" execution_order="10" enabled="1" action="preg_replace">
       <find><![CDATA[#(\s*)(</xen:if>\s*<!-- end block: useful_searches -->)#s]]></find>
