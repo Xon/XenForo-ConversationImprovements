@@ -32,7 +32,9 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
             SV_ConversationImprovements_Globals::$UsersToUpdate = null;
             foreach($userIds as $userId)
             {
+                XenForo_Db::beginTransaction();
                 $convModel->rebuildUnreadConversationCountForUser($userId);
+                XenForo_Db::commit();
             }
         }
 
