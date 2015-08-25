@@ -19,7 +19,7 @@ Does not permit moderators/administrators to see another person's conversations 
 
 Due to XenForo's design, this addon impacts general 'everything' search as per search handler constrains are not invoked resulting in false positives which are removed by XenForo rather than the search subsystem.
 
-Adds each conversation, and conversation message do the XenForo Search store (MySQL or Elastic Search), which may result in a larger search index.
+Adds each conversation, and conversation message to the XenForo Search store (MySQL or Elastic Search), which may result in a larger search index.
 
 ### New Conversation Permissions
 
