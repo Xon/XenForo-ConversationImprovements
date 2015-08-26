@@ -11,9 +11,18 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMessage extends
         return $defaultOptions;
     }
 
+	protected function _postSave()
+	{
+		$this->_getConversationModel()->sv_deferRebuildUnreadCounters();
+        parent::_postSave();
+    }
+
     protected function _postSaveAfterTransaction()
     {
+        $this->_getConversationModel()->sv_rebuildPendingUnreadCounters();
+
         parent::_postSaveAfterTransaction();
+
         if ($this->getOption(self::OPTION_INDEX_FOR_SEARCH))
         {
             $this->_insertIntoSearchIndex();

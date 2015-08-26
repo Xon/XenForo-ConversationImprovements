@@ -18,25 +18,14 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
             $this->_firstMessageDw->setOption(self::OPTION_INDEX_FOR_SEARCH, false);
         }
 
-        SV_ConversationImprovements_Globals::$UsersToUpdate = array();
+        $this->_getConversationModel()->sv_deferRebuildUnreadCounters();
 
         parent::_postSave();
     }
 
     protected function _postSaveAfterTransaction()
     {
-        if (SV_ConversationImprovements_Globals::$UsersToUpdate !== null)
-        {
-            $convModel = $this->_getConversationModel();
-            $userIds = SV_ConversationImprovements_Globals::$UsersToUpdate;
-            SV_ConversationImprovements_Globals::$UsersToUpdate = null;
-            foreach($userIds as $userId)
-            {
-                XenForo_Db::beginTransaction();
-                $convModel->rebuildUnreadConversationCountForUser($userId);
-                XenForo_Db::commit();
-            }
-        }
+        $this->_getConversationModel()->sv_rebuildPendingUnreadCounters();
 
         parent::_postSaveAfterTransaction();
 

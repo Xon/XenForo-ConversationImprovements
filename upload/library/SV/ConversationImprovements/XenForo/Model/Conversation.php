@@ -2,11 +2,41 @@
 
 class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_ConversationImprovements_XenForo_Model_Conversation
 {
+    public function sv_deferRebuildUnreadCounters()
+    {
+        if (SV_ConversationImprovements_Globals::$UsersToUpdate === null)
+        {
+            SV_ConversationImprovements_Globals::$UsersToUpdate = array();
+        }
+        SV_ConversationImprovements_Globals::$UsersToUpdateRefs++;
+    }
+    
+    public function sv_rebuildPendingUnreadCounters()
+    {
+        SV_ConversationImprovements_Globals::$UsersToUpdateRefs--;
+        if (SV_ConversationImprovements_Globals::$UsersToUpdateRefs > 0)
+        {
+            return;
+        }
+
+        if (SV_ConversationImprovements_Globals::$UsersToUpdate !== null)
+        {
+            $userIds = SV_ConversationImprovements_Globals::$UsersToUpdate;
+            SV_ConversationImprovements_Globals::$UsersToUpdate = null;
+            foreach($userIds as $userId => $null)
+            {
+                XenForo_Db::beginTransaction();
+                $this->rebuildUnreadConversationCountForUser($userId);
+                XenForo_Db::commit();
+            }
+        }
+    }
+
     public function rebuildUnreadConversationCountForUser($userId)
     {
         if (SV_ConversationImprovements_Globals::$UsersToUpdate !== null)
         {
-            SV_ConversationImprovements_Globals::$UsersToUpdate[] = $userId;
+            SV_ConversationImprovements_Globals::$UsersToUpdate[$userId] = true;
             return;
         }
         parent::rebuildUnreadConversationCountForUser($userId);
