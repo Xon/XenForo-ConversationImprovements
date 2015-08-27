@@ -4,6 +4,22 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMessage extends
 {
     const OPTION_INDEX_FOR_SEARCH = 'indexForSearch';
 
+    const DATA_CONVERSATION = 'conversationInfo';
+
+    protected function _getConversationInfo()
+    {
+        if (!$conversation = $this->getExtraData(self::DATA_CONVERSATION))
+        {
+            $conversation_id = $this->get('conversation_id');
+            $conversations = $this->_getConversationModel()->getConversationsByIds($conversation_id);
+            $conversation = isset($conversations[$conversation_id]) ? $conversations[$conversation_id] : null;
+
+            $this->setExtraData(self::DATA_CONVERSATION, $conversation ? $conversation : array());
+        }
+
+        return $conversation;
+    }
+
     protected function _getDefaultOptions()
     {
         $defaultOptions = parent::_getDefaultOptions();
@@ -11,9 +27,9 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMessage extends
         return $defaultOptions;
     }
 
-	protected function _postSave()
-	{
-		$this->_getConversationModel()->sv_deferRebuildUnreadCounters();
+    protected function _postSave()
+    {
+        $this->_getConversationModel()->sv_deferRebuildUnreadCounters();
         parent::_postSave();
     }
 
@@ -45,13 +61,8 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMessage extends
         }
 
         $viewingUser = XenForo_Visitor::getInstance()->toArray();
-        $conversationModel = $this->_getConversationModel();
-        $conversation_id = $this->get('conversation_id');
-        $conversations = $conversationModel->getConversationsByIds($conversation_id);
-        $conversation = isset($conversations[$conversation_id]) ? $conversations[$this->get('conversation_id')] : null;
-
         $indexer = new XenForo_Search_Indexer();
-        $dataHandler->insertIntoIndex($indexer, $this->getMergedData(), $conversation);
+        $dataHandler->insertIntoIndex($indexer, $this->getMergedData(), $this->_getConversationInfo());
     }
 
     protected function _deleteFromSearchIndex()
