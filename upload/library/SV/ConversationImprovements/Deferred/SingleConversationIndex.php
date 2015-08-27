@@ -1,0 +1,51 @@
+<?php
+
+
+class SV_ConversationImprovements_Deferred_SingleConversationIndex extends XenForo_Deferred_Abstract
+{
+    public function execute(array $deferred, array $data, $targetRunTime, &$status)
+    {
+        if (!isset($data['conversationId']))
+        {
+            return false;
+        }
+
+        $conversationId = $data['conversationId'];
+        $conversationModel = XenForo_Model::create('XenForo_Model_Conversation');
+        $conversation = $conversationModel->getConversationMasterById($conversationId);
+        $messagesPerPage = XenForo_Application::get('options')->messagesPerPage;
+
+        $messageFetchOptions = array(
+            'perPage' => $messagesPerPage < 100 ? 100 : $messagesPerPage,
+            'page' => $data['start'],
+            'join' => 0
+        );
+
+        $messages = $conversationModel->getConversationMessages($conversationId, $messageFetchOptions);
+
+        if (empty($messages))
+        {
+            return false;
+        }
+
+        XenForo_Application::defer('SearchIndexPartial', array(
+            'contentType' => 'conversation_message',
+            'contentIds' => XenForo_Application::arrayColumn($messages, 'message_id')
+        ));
+
+        $data['start']++;
+        $lastPage = intval(ceil(($conversation['reply_count'] +1) / $messageFetchOptions['perPage']));
+        if ($data['start'] > $lastPage)
+        {
+            return $data;
+        }
+
+        return false;
+    }
+
+
+    public function canCancel()
+    {
+        return false;
+    }
+}

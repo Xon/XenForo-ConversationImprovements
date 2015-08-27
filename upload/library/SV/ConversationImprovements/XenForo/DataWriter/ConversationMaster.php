@@ -65,11 +65,16 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
         // limit how what can trigger re-indexing of the conversation
         if ($this->isUpdate() && $this->isChanged('recipients'))
         {
-            XenForo_Application::defer('SearchIndexPartial', array(
-                'contentType' => 'conversation_message',
-                'contentIds' => $this->_getDiscussionMessageIds()
-            ));
+            $this->_insertOrUpdateSearchIndexForAllMessages();
         }
+    }
+
+    protected function _insertOrUpdateSearchIndexForAllMessages()
+    {
+        XenForo_Application::defer('SV_ConversationImprovements_Deferred_SingleConversationIndex', array(
+            'conversationId' => $this->get('conversation_id'),
+            'start' => 1
+        ));
     }
 
     protected function _deleteFromSearchIndex()
