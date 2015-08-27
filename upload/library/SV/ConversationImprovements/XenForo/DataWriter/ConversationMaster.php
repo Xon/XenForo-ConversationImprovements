@@ -54,16 +54,15 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
         {
             $indexer = new XenForo_Search_Indexer();
             $dataHandler->insertIntoIndex($indexer, $this->getMergedData(), null);
-        }
-
-        if ($this->_firstMessageDw)
-        {
-            $dataHandler = $this->_getSearchDataHandlerForMessage();
-            $dataHandler->insertIntoIndex($indexer, $this->_firstMessageDw->getMergedData(), $this->getMergedData());
+            if ($this->_firstMessageDw)
+            {
+                $dataHandler = $this->_getSearchDataHandlerForMessage();
+                $dataHandler->insertIntoIndex($indexer, $this->_firstMessageDw->getMergedData(), $this->getMergedData());
+            }
         }
 
         // limit how what can trigger re-indexing of the conversation
-        if ($this->isUpdate() && ($this->isChanged('recipients') || $this->isChanged('title')))
+        if ($this->isUpdate() && $this->isChanged('recipients'))
         {
             XenForo_Application::defer('SearchIndexPartial', array(
                 'contentType' => 'conversation_message',
