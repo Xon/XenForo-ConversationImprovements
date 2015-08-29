@@ -3,6 +3,7 @@
 class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends XFCP_SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster
 {
     const OPTION_INDEX_FOR_SEARCH = 'indexForSearch';
+    const DATA_CONVERSATION = 'conversationInfo';
 
     protected function _getDefaultOptions()
     {
@@ -16,7 +17,7 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
         if ($this->_firstMessageDw)
         {
             $this->_firstMessageDw->setOption(self::OPTION_INDEX_FOR_SEARCH, false);
-            $this->_firstMessageDw->setExtraData(XenForo_DataWriter_ConversationMaster::DATA_CONVERSATION, $this->getMergedData());
+            $this->_firstMessageDw->setExtraData(self::DATA_CONVERSATION, $this->getMergedData());
         }
 
         $this->_getConversationModel()->sv_deferRebuildUnreadCounters();
