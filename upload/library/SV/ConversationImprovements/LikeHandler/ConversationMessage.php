@@ -20,15 +20,19 @@ class SV_ConversationImprovements_LikeHandler_ConversationMessage extends XenFor
         $messages = $conversationModel->getConversationMessagesByIds($contentIds);
 
         $conversationIds = XenForo_Application::arrayColumn($messages, 'conversation_id');
-        $conversations = $conversationModel->getConversationsForUserByIdsWithMessage($conversationIds, $viewingUser['user_id']);
+        $conversations = $conversationModel->getConversationsForUserByIdsWithMessage($viewingUser['user_id'], $conversationIds);
+        foreach ($conversations AS $key => &$conversation)
+        {
+            if (!$conversationModel->canViewConversation($conversation, $null, $viewingUser))
+            {
+                unset($conversations[$key]);
+            }
+        }
+
         foreach ($messages AS $key => &$message)
         {
             if (isset($conversations[$message['conversation_id']]))
             {
-                if (!$conversationModel->canViewConversation($conversation, $null, $viewingUser))
-                {
-                    unset($messages[$key]);
-                }
                 $message['title'] = $conversations[$message['conversation_id']]['title'];
             }
             else

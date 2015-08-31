@@ -22,6 +22,7 @@ class SV_ConversationImprovements_Installer
             VALUES
                 ('conversation', 'search_handler_class', '".self::AddonNameSpace."Search_DataHandler_Conversation'),
                 ('conversation_message', 'like_handler_class', '".self::AddonNameSpace."LikeHandler_ConversationMessage'),
+                ('conversation_message', 'alert_handler_class', '".self::AddonNameSpace."AlertHandler_ConversationMessage'),
                 ('conversation_message', 'search_handler_class', '".self::AddonNameSpace."Search_DataHandler_ConversationMessage')
         ");
 
