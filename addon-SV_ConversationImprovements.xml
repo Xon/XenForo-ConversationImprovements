@@ -44,6 +44,7 @@
     <phrase title="sv_no_one_has_liked_this_conversation_message_yet" version_id="1010000" version_string="1.1.0"><![CDATA[No one has liked this message yet.]]></phrase>
     <phrase title="sv_unlike_conversation_message" version_id="1010000" version_string="1.1.0"><![CDATA[Unlike conversation message]]></phrase>
     <phrase title="sv_x_liked_your_message_in_the_conversation_y" version_id="1010000" version_string="1.1.0"><![CDATA[{name} liked your message in the conversation {title}.]]></phrase>
+    <phrase title="sv_x_liked_ys_message_in_the_conversation_z" version_id="1010000" version_string="1.1.0"><![CDATA[{name} liked <a {posterParams}>{poster}'s message</a> in the conversation {title}.]]></phrase>
     <phrase title="sv_you_sure_you_want_to_like_this_conversation_message" version_id="1010000" version_string="1.1.0"><![CDATA[Are you sure you want to like this message?]]></phrase>
     <phrase title="sv_you_sure_you_want_to_unlike_this_conversation_message" version_id="1010000" version_string="1.1.0"><![CDATA[Are you sure you want to unlike this message?]]></phrase>
     <phrase title="your_conversation_messages" version_id="10000" version_string="1.0.0"><![CDATA[Your Conversation Messages]]></phrase>
@@ -53,10 +54,34 @@
   <templates>
     <template title="alert_conversation_message_like" version_id="1010000" version_string="1.1.0"><![CDATA[{xen:phrase sv_x_liked_your_message_in_the_conversation_y,
 	'name={xen:helper username, $user, 'subject'}',
-	'title=<a href="{xen:link conversations/ip, $content, 'm={$content.message_id}'}" class="PopupItemLink">{xen:helper threadPrefix, $content}{$content.title}</a>'}]]></template>
+	'title=<a href="{xen:link conversations/message, $content, 'm={$content.message_id}'}" class="PopupItemLink">{xen:helper threadPrefix, $content}{$content.title}</a>'}]]></template>
     <template title="conversation_private_controls" version_id="10100" version_string="1.1.0"><![CDATA[<xen:if is="{$message.canViewIps} AND {$message.ip_id}">
 <a href="{xen:link conversations/ip, $conversation, 'm={$message.message_id}'}" class="item control ip OverlayTrigger"><span></span>{xen:phrase ip}</a>
 </xen:if>]]></template>
+    <template title="news_feed_item_conversation_message_like" version_id="1010000" version_string="1.1.0"><![CDATA[<h3 class="description">
+
+	<xen:if is="{$content.user_id} == {$visitor.user_id}">
+	
+		<xen:comment><!-- $user liked your post --></xen:comment>
+		{xen:phrase sv_x_liked_your_message_in_the_conversation_y,
+			'name={xen:if $user.user_id, {xen:helper username, $user, 'primaryText'}, '<span class="primaryText">{xen:phrase unknown_member}</span>'}',
+			'title=<a href="{xen:link conversations/message, $content, 'm={$content.message_id}'}"{xen:if '{$content.hasPreview}', ' class="PreviewTooltip" data-previewUrl="{xen:link conversations/preview, $content, 'm={$content.message_id}'}"'}">{xen:helper threadPrefix, $content}{$content.title}</a>'}
+		
+	<xen:else />
+	
+		<xen:comment><!-- $user liked $contentUser's post --></xen:comment>
+		{xen:phrase sv_x_liked_ys_message_in_the_conversation_z,
+			'name={xen:if $user.user_id, {xen:helper username, $user, 'primaryText'}, '<span class="primaryText">{xen:phrase unknown_member}</span>'}',
+			'posterParams=href="{xen:link posts, $content}"', 'poster={$content.username}',
+			'title=<a href="{xen:link conversations/message, $content, 'm={$content.message_id}'}"{xen:if '{$content.hasPreview}', ' class="PreviewTooltip" data-previewUrl="{xen:link conversations/preview, $content, 'm={$content.message_id}'}"'}>{xen:helper threadPrefix, $content}{$content.title}</a>'}
+		
+	</xen:if>
+
+</h3>
+
+<p class="snippet">{xen:helper snippet, $content.message, $xenOptions.newsFeedMessageSnippetLength, {xen:array 'stripQuote=1'}}</p>
+
+<xen:include template="news_feed_attached_images" />]]></template>
     <template title="search_bar_conversations_only" version_id="10000" version_string="1.0.0"><![CDATA[<label title="{xen:phrase search_conversations_only}"><input type="checkbox" name="type" value="conversation_message" id="search_bar_conversations" class="Disabler AutoChecker" checked="checked" data-uncheck="#search_bar_conversation" /> {xen:phrase search_conversations_only}</label>]]></template>
     <template title="search_bar_conversation_only" version_id="10000" version_string="1.0.0"><![CDATA[<label title="{xen:phrase search_this_conversation_only}"><input type="checkbox" name="type[conversation_message][conversation_id]" value="{$conversation.conversation_id}" id="search_bar_conversation" class="Disabler AutoChecker" data-uncheck="#search_bar_title_only, #search_bar_conversations" /> {xen:phrase search_this_conversation_only}</label>]]></template>
     <template title="search_form_conversation_message" version_id="10000" version_string="1.0.0"><![CDATA[<xen:title>{xen:phrase search_conversations}</xen:title>

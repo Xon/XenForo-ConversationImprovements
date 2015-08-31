@@ -1,10 +1,10 @@
 <?php
 
-class SV_ConversationImprovements_AlertHandler_ConversationMessage extends XenForo_AlertHandler_Abstract
+class SV_ConversationImprovements_NewsFeedHandler_ConversationMessage extends XenForo_NewsFeedHandler_Abstract
 {
     var $_conversationModel = null;
 
-    public function getContentByIds(array $contentIds, $model, $userId, array $viewingUser)
+    public function getContentByIds(array $contentIds, $model, array $viewingUser)
     {
         $conversationModel = $this->_getConversationModel();
 
