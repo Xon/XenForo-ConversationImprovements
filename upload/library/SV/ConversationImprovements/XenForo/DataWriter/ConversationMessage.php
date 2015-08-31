@@ -20,6 +20,14 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMessage extends
         return $conversation;
     }
 
+    protected function _getFields()
+    {
+        $fields = parent::_getFields();
+        $fields['xf_conversation_message']['likes'] = array('type' => self::TYPE_UINT_FORCED, 'default' => 0);
+        $fields['xf_conversation_message']['like_users'] = array('type' => self::TYPE_SERIALIZED, 'default' => 'a:0:{}');
+        return $fields;
+    }
+
     protected function _getDefaultOptions()
     {
         $defaultOptions = parent::_getDefaultOptions();

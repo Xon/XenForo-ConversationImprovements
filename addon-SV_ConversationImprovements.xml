@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="SV_ConvImprovements" title="Conversation Improvements" version_string="1.0.3a" version_id="1000301" url="https://xenforo.com/community/resources/conversation-improvements-by-xon.4518/" install_callback_class="SV_ConversationImprovements_Installer" install_callback_method="install" uninstall_callback_class="SV_ConversationImprovements_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="SV_ConvImprovements" title="Conversation Improvements" version_string="1.1.0" version_id="1010000" url="https://xenforo.com/community/resources/conversation-improvements-by-xon.4518/" install_callback_class="SV_ConversationImprovements_Installer" install_callback_method="install" uninstall_callback_class="SV_ConversationImprovements_Installer" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -20,6 +20,7 @@
     <permission_groups/>
     <permissions>
       <permission permission_group_id="conversation" permission_id="canReply" permission_type="flag" default_value="unset" interface_group_id="conversationPermissions" display_order="13"/>
+      <permission permission_group_id="conversation" permission_id="like" permission_type="flag" default_value="unset" interface_group_id="conversationPermissions" display_order="65"/>
       <permission permission_group_id="conversation" permission_id="replyLimit" permission_type="integer" depend_permission_id="canReply" default_value_int="-1" interface_group_id="conversationPermissions" display_order="14"/>
     </permissions>
     <interface_groups/>
@@ -30,18 +31,30 @@
     <phrase title="display_results_as_conversations" version_id="10000" version_string="1.0.0"><![CDATA[Display results as conversations]]></phrase>
     <phrase title="member_is_recipient" version_id="10000" version_string="1.0.0"><![CDATA[Member is Recipient]]></phrase>
     <phrase title="permission_conversation_canReply" version_id="1" version_string="1.0.0"><![CDATA[Can Reply to Conversation]]></phrase>
+    <phrase title="permission_conversation_like" version_id="1010000" version_string="1.1.0"><![CDATA[Like conversation messages]]></phrase>
     <phrase title="permission_conversation_replyLimit" version_id="1" version_string="1.0.0"><![CDATA[Conversation Reply Limit]]></phrase>
     <phrase title="search_conversations" version_id="10000" version_string="1.0.0"><![CDATA[Search Conversations]]></phrase>
     <phrase title="search_conversations_only" version_id="10000" version_string="1.0.0"><![CDATA[Search conversations only]]></phrase>
     <phrase title="search_conversations_started_by_this_member_only" version_id="10000" version_string="1.0.0"><![CDATA[Search conversations started by this member only]]></phrase>
     <phrase title="search_this_conversation_only" version_id="10000" version_string="1.0.0"><![CDATA[Search this conversation only]]></phrase>
+    <phrase title="sv_conversation_message_by_x" version_id="1010000" version_string="1.1.0"><![CDATA[Conversation Message By {username}]]></phrase>
     <phrase title="sv_ip_information_for_conversation_message" version_id="10001" version_string="1.0.1"><![CDATA[IP address information for message #{number} by {user}]]></phrase>
+    <phrase title="sv_like_conversation_message" version_id="1010000" version_string="1.1.0"><![CDATA[Like conversation message]]></phrase>
+    <phrase title="sv_members_who_liked_this_conversation_message" version_id="1010000" version_string="1.1.0"><![CDATA[Members Who Liked This Conversation Message]]></phrase>
+    <phrase title="sv_no_one_has_liked_this_conversation_message_yet" version_id="1010000" version_string="1.1.0"><![CDATA[No one has liked this message yet.]]></phrase>
+    <phrase title="sv_unlike_conversation_message" version_id="1010000" version_string="1.1.0"><![CDATA[Unlike conversation message]]></phrase>
+    <phrase title="sv_x_liked_your_message_in_the_conversation_y" version_id="1010000" version_string="1.1.0"><![CDATA[{name} liked your message in the conversation {title}.]]></phrase>
+    <phrase title="sv_you_sure_you_want_to_like_this_conversation_message" version_id="1010000" version_string="1.1.0"><![CDATA[Are you sure you want to like this message?]]></phrase>
+    <phrase title="sv_you_sure_you_want_to_unlike_this_conversation_message" version_id="1010000" version_string="1.1.0"><![CDATA[Are you sure you want to unlike this message?]]></phrase>
     <phrase title="your_conversation_messages" version_id="10000" version_string="1.0.0"><![CDATA[Your Conversation Messages]]></phrase>
   </phrases>
   <route_prefixes/>
   <style_properties/>
   <templates>
-    <template title="conversation_private_controls" version_id="10002" version_string="1.0.2"><![CDATA[<xen:if is="{$canViewIps} AND {$message.ip_id}">
+    <template title="alert_conversation_message_like" version_id="1010000" version_string="1.1.0"><![CDATA[{xen:phrase sv_x_liked_your_message_in_the_conversation_y,
+	'name={xen:helper username, $user, 'subject'}',
+	'title=<a href="{xen:link conversations/ip, $content, 'm={$content.message_id}'}" class="PopupItemLink">{xen:helper threadPrefix, $content}{$content.title}</a>'}]]></template>
+    <template title="conversation_private_controls" version_id="10100" version_string="1.1.0"><![CDATA[<xen:if is="{$message.canViewIps} AND {$message.ip_id}">
 <a href="{xen:link conversations/ip, $conversation, 'm={$message.message_id}'}" class="item control ip OverlayTrigger"><span></span>{xen:phrase ip}</a>
 </xen:if>]]></template>
     <template title="search_bar_conversations_only" version_id="10000" version_string="1.0.0"><![CDATA[<label title="{xen:phrase search_conversations_only}"><input type="checkbox" name="type" value="conversation_message" id="search_bar_conversations" class="Disabler AutoChecker" checked="checked" data-uncheck="#search_bar_conversation" /> {xen:phrase search_conversations_only}</label>]]></template>
@@ -252,8 +265,79 @@
 		<xen:map from="$message" to="$content" />
 	</xen:include>
 </div>]]></template>
+    <template title="sv_conversation_message_like" version_id="1010000" version_string="1.1.0"><![CDATA[<xen:title>{xen:phrase 'sv_conversation_message_by_x', 'username={$comment.username}'} - {xen:if $like, '{xen:phrase sv_unlike_conversation_message}', '{xen:phrase sv_like_conversation_message}'}</xen:title>
+
+<xen:navigation>
+	<xen:breadcrumb source="$nodeBreadCrumbs" />
+	<xen:breadcrumb href="{xen:link 'conversations/message', $conversation, 'm={$message.message_id}'}">{xen:helper threadPrefix, $conversation}{$conversation.title}</xen:breadcrumb>
+</xen:navigation>
+
+<form action="{xen:link 'conversations/like', $conversation, 'm={$message.message_id}'}" method="post" class="xenForm">
+
+	<dl class="ctrlUnit fullWidth">
+		<dt></dt>
+		<dd>
+			<xen:if is="{$like}">
+				{xen:phrase sv_you_sure_you_want_to_unlike_this_conversation_message}
+			<xen:else />
+				{xen:phrase sv_you_sure_you_want_to_like_this_conversation_message}
+			</xen:if>
+		</dd>
+	</dl>
+
+	<dl class="ctrlUnit submitUnit">
+		<dt></dt>
+		<dd><input type="submit" value="{xen:if $like, '{xen:phrase sv_unlike_conversation_message}', '{xen:phrase sv_like_conversation_message}'}" accesskey="s" class="button primary" autofocus="true" /></dd>
+	</dl>
+
+	<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
+</form>]]></template>
+    <template title="sv_conversation_message_likes" version_id="1010000" version_string="1.1.0"><![CDATA[<xen:title>{xen:phrase 'sv_conversation_message_by_x', 'username={$comment.username}'} - {xen:phrase sv_members_who_liked_this_conversation_message}</xen:title>
+
+<xen:container var="$head.noindex">
+	<meta name="robots" content="noindex" /></xen:container>
+
+<xen:navigation>
+	<xen:breadcrumb source="$nodeBreadCrumbs" />
+	<xen:breadcrumb href="{xen:link 'conversations/message', $conversation, 'm={$message.message_id}'}">{xen:helper threadPrefix, $conversation}{$conversation.title}</xen:breadcrumb>
+</xen:navigation>
+
+<div class="section">
+	<ol class="overlayScroll">
+	<xen:foreach loop="$likes" value="$like">
+		<xen:include template="member_list_item">
+			<xen:set var="$extraTemplate"><xen:datetime time="$like.like_date" /></xen:set>
+			<xen:map from="$like" to="$user" />
+		</xen:include>
+	</xen:foreach>
+	</ol>
+	<div class="sectionFooter overlayOnly"><a class="button primary OverlayCloser">{xen:phrase close}</a></div>
+</div>]]></template>
+    <template title="sv_conversation_message_public_controls" version_id="1010000" version_string="1.1.0"><![CDATA[<xen:if is="{$message.canLike}">
+  <a href="{xen:link conversations/like, $conversation, 'm={$message.message_id}'}" 
+     class="LikeLink item control {xen:if $message.like_date, unlike, like}" data-container="#likes-message-{$message.message_id}">
+     <span></span>
+     <span class="LikeLabel">{xen:if $message.like_date, {xen:phrase unlike}, {xen:phrase like}}</span>
+  </a>
+</xen:if>]]></template>
   </templates>
   <public_template_modifications>
+    <modification template="conversation_message" modification_key="SV_ConversationImprovements_conversation_message_1" description="Inject public controls" execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#<div class="publicControls">\s*<xen:contentcheck>#si]]></find>
+      <replace><![CDATA[$0
+<xen:include template="sv_conversation_message_public_controls" />]]></replace>
+    </modification>
+    <modification template="conversation_message" modification_key="SV_ConversationImprovements_conversation_message_2" description="Inject Like support #1" execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[<xen:include template="message">]]></find>
+      <replace><![CDATA[$0
+<xen:set var="$likesUrl">{xen:link conversation/likes, $cconversation, 'm={$message.message_id}'}</xen:set>]]></replace>
+    </modification>
+    <modification template="conversation_message" modification_key="SV_ConversationImprovements_conversation_message_3" description="Inject Like support #2" execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#(<xen:set var="\$messageAfterTemplate.*)(\s+</xen:set>)#si]]></find>
+      <replace><![CDATA[$1
+<div id="likes-message-{$message.message_id}"><xen:if is="{$message.likes}"><xen:include template="likes_summary" /></xen:if></div>
+$2]]></replace>
+    </modification>
     <modification template="conversation_add" modification_key="SV_ConversationSearch_conversation_add" description="Inject Search bar" execution_order="10" enabled="1" action="preg_replace">
       <find><![CDATA[#$#]]></find>
       <replace><![CDATA[<xen:container var="$searchBar.conversations"><xen:include template="search_bar_conversations_only" /></xen:container>]]></replace>

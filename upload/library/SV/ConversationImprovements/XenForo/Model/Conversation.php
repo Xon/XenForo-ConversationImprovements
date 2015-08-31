@@ -10,7 +10,7 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
         }
         SV_ConversationImprovements_Globals::$UsersToUpdateRefs++;
     }
-    
+
     public function sv_rebuildPendingUnreadCounters()
     {
         SV_ConversationImprovements_Globals::$UsersToUpdateRefs--;
@@ -40,6 +40,43 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
             return;
         }
         parent::rebuildUnreadConversationCountForUser($userId);
+    }
+
+    public function getConversationMessages($conversationId, array $fetchOptions = array())
+    {
+        if (!isset($fetchOptions['likeUserId']))
+        {
+            $fetchOptions['likeUserId'] = XenForo_Visitor::getUserId();
+        }
+        return parent::getConversationMessages($conversationId, $fetchOptions);
+    }
+
+    public function prepareMessageFetchOptions(array $fetchOptions)
+    {
+        $joinOptions = parent::prepareMessageFetchOptions($fetchOptions);
+
+        if (isset($fetchOptions['likeUserId']))
+        {
+            if (empty($fetchOptions['likeUserId']))
+            {
+                $joinOptions['selectFields'] .= ',
+                    0 AS like_date';
+            }
+            else
+            {
+                $db = $this->_getDb();
+
+                $joinOptions['selectFields'] .= ',
+                    liked_content.like_date';
+                $joinOptions['joinTables'] .= '
+                    LEFT JOIN xf_liked_content AS liked_content
+                        ON (liked_content.content_type = \'conversation_message\'
+                            AND liked_content.content_id = message.message_id
+                            AND liked_content.like_user_id = ' .$db->quote($fetchOptions['likeUserId']) . ')';
+            }
+        }
+
+        return $joinOptions;
     }
 
     public function getConversationMessagesByIds($messageIds, array $fetchOptions = array())
@@ -156,5 +193,56 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
             return false;
 
         return parent::canReplyToConversation($conversation, $errorPhraseKey, $viewingUser);
+    }
+
+    public function canLikeConversationMessage(array $message, array $conversation, &$errorPhraseKey = '', array $viewingUser = null)
+    {
+        $this->standardizeViewingUserReference($viewingUser);
+
+        if (!$viewingUser['user_id'])
+        {
+            return false;
+        }
+
+        if ($message['user_id'] == $viewingUser['user_id'])
+        {
+            $errorPhraseKey = 'liking_own_content_cheating';
+            return false;
+        }
+
+        return XenForo_Permission::hasPermission($viewingUser['permissions'], 'conversation', 'like');
+    }
+
+    public function prepareMessage(array $message, array $conversation)
+    {
+        $this->standardizeViewingUserReference($viewingUser);
+
+        $message = parent::prepareMessage($message, $conversation);
+        $message['canViewIps'] = $this->canViewIps($conversation, $null, $viewingUser);
+        $message['canLike'] = $this->canLikeConversationMessage($message, $conversation, $null, $viewingUser);
+
+        if ($message['likes'])
+        {
+            $message['likeUsers'] = @unserialize($message['like_users']);
+        }
+        return $message;
+    }
+
+    public function batchUpdateConversationMessageLikeUser($oldUserId, $newUserId, $oldUsername, $newUsername)
+    {
+        $db = $this->_getDb();
+
+        // note that xf_liked_content should have already been updated with $newUserId
+        $db->query('
+            UPDATE (
+                SELECT content_id FROM xf_liked_content
+                WHERE content_type = \'conversation_message\'
+                AND like_user_id = ?
+            ) AS temp
+            INNER JOIN xf_conversation_message AS message ON (message.profile_post_id = temp.content_id)
+            SET like_users = REPLACE(like_users, ' .
+            $db->quote('i:' . $oldUserId . ';s:8:"username";s:' . strlen($oldUsername) . ':"' . $oldUsername . '";') . ', ' .
+            $db->quote('i:' . $newUserId . ';s:8:"username";s:' . strlen($newUsername) . ':"' . $newUsername . '";') . ')
+        ', $newUserId);
     }
 }
