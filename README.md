@@ -7,8 +7,10 @@ Features:
 - Deadlock workaround.
 - Adds conversation search, with options to search by recipient.
 - New Conversation Permissions
+- Conversation Likes
 
 ### Deadlock workaround
+
 Fixes an issue where updating conversation counters can cause deadlocks
 
 ### Adds conversation search, with options to search by recipient
@@ -33,17 +35,23 @@ User B can have a reply limit of 10.
 Once the conversation has >5 replies, User A can no longer post.
 Once the conversation has >10 replies, User A and User B can no longer post.
 
+### Conversation Likes
+
+Adds conversation likes. These Likes generate alerts, and additions to users news feed (with permission checks) as expected.
+
 #Permissions
 
 - Can Reply to Conversation.
 - Reply Limit for Conversation.
+- Like conversation messages.
 
 #Manual post-installation steps
 
-On installing for he first time, please rebuild the Search Index for the following content types:
+On installing for the first time, please rebuild the Search Index for the following content types:
 - Conversation
 - Conversation Messages
 
 #Performance impact
 
-1 extra query per conversation message posted due to indexing, and indexing itself.
+- 1 extra query per conversation message posted due to indexing, and indexing itself.
+- 2 extra columns per conversation message for Like data.
