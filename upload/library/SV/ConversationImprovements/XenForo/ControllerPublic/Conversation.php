@@ -5,7 +5,7 @@ class SV_ConversationImprovements_XenForo_ControllerPublic_Conversation extends 
     public function actionLike()
     {
         $conversationId = $this->_input->filterSingle('conversation_id', XenForo_Input::UINT);
-        $messageId = $this->_input->filterSingle('m', XenForo_Input::UINT);
+        $messageId = $this->_input->filterSingle('message_id', XenForo_Input::UINT);
 
         list($conversation, $conversationMessage) = $this->_getConversationAndMessageOrError($messageId, $conversationId);
 
@@ -68,7 +68,7 @@ class SV_ConversationImprovements_XenForo_ControllerPublic_Conversation extends 
     public function actionLikes()
     {
         $conversationId = $this->_input->filterSingle('conversation_id', XenForo_Input::UINT);
-        $messageId = $this->_input->filterSingle('m', XenForo_Input::UINT);
+        $messageId = $this->_input->filterSingle('message_id', XenForo_Input::UINT);
 
         list($conversation, $conversationMessage) = $this->_getConversationAndMessageOrError($messageId, $conversationId);
 
@@ -106,7 +106,7 @@ class SV_ConversationImprovements_XenForo_ControllerPublic_Conversation extends 
     public function actionIp()
     {
         $conversationId = $this->_input->filterSingle('conversation_id', XenForo_Input::UINT);
-        $messageId = $this->_input->filterSingle('m', XenForo_Input::UINT);
+        $messageId = $this->_input->filterSingle('message_id', XenForo_Input::UINT);
 
         list($conversation, $conversationMessage) = $this->_getConversationAndMessageOrError($messageId, $conversationId);
 

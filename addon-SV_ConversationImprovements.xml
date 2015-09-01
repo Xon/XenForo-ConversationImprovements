@@ -52,28 +52,28 @@
   <route_prefixes/>
   <style_properties/>
   <templates>
-    <template title="alert_conversation_message_like" version_id="1010000" version_string="1.1.0"><![CDATA[{xen:phrase sv_x_liked_your_message_in_the_conversation_y,
+    <template title="alert_conversation_message_like" version_id="1010001" version_string="1.1.0"><![CDATA[{xen:phrase sv_x_liked_your_message_in_the_conversation_y,
 	'name={xen:helper username, $user, 'subject'}',
-	'title=<a href="{xen:link conversations/message, $content, 'm={$content.message_id}'}" class="PopupItemLink">{xen:helper threadPrefix, $content}{$content.title}</a>'}]]></template>
-    <template title="conversation_private_controls" version_id="10100" version_string="1.1.0"><![CDATA[<xen:if is="{$message.canViewIps} AND {$message.ip_id}">
-<a href="{xen:link conversations/ip, $conversation, 'm={$message.message_id}'}" class="item control ip OverlayTrigger"><span></span>{xen:phrase ip}</a>
+	'title=<a href="{xen:link conversations/message, $content, 'message_id={$content.message_id}'}" class="PopupItemLink">{xen:helper threadPrefix, $content}{$content.title}</a>'}]]></template>
+    <template title="conversation_private_controls" version_id="1010001" version_string="1.1.0"><![CDATA[<xen:if is="{$message.canViewIps} AND {$message.ip_id}">
+<a href="{xen:link conversations/ip, $conversation, 'message_id={$message.message_id}'}" class="item control ip OverlayTrigger"><span></span>{xen:phrase ip}</a>
 </xen:if>]]></template>
-    <template title="news_feed_item_conversation_message_like" version_id="1010000" version_string="1.1.0"><![CDATA[<h3 class="description">
+    <template title="news_feed_item_conversation_message_like" version_id="1010001" version_string="1.1.0"><![CDATA[<h3 class="description">
 
 	<xen:if is="{$content.user_id} == {$visitor.user_id}">
 	
 		<xen:comment><!-- $user liked your post --></xen:comment>
 		{xen:phrase sv_x_liked_your_message_in_the_conversation_y,
 			'name={xen:if $user.user_id, {xen:helper username, $user, 'primaryText'}, '<span class="primaryText">{xen:phrase unknown_member}</span>'}',
-			'title=<a href="{xen:link conversations/message, $content, 'm={$content.message_id}'}"{xen:if '{$content.hasPreview}', ' class="PreviewTooltip" data-previewUrl="{xen:link conversations/preview, $content, 'm={$content.message_id}'}"'}">{xen:helper threadPrefix, $content}{$content.title}</a>'}
+			'title=<a href="{xen:link conversations/message, $content, 'message_id={$content.message_id}'}"{xen:if '{$content.hasPreview}', ' class="PreviewTooltip" data-previewUrl="{xen:link conversations/preview, $content, 'message_id={$content.message_id}'}"'}">{xen:helper threadPrefix, $content}{$content.title}</a>'}
 		
 	<xen:else />
 	
 		<xen:comment><!-- $user liked $contentUser's post --></xen:comment>
 		{xen:phrase sv_x_liked_ys_message_in_the_conversation_z,
 			'name={xen:if $user.user_id, {xen:helper username, $user, 'primaryText'}, '<span class="primaryText">{xen:phrase unknown_member}</span>'}',
-			'posterParams=href="{xen:link posts, $content}"', 'poster={$content.username}',
-			'title=<a href="{xen:link conversations/message, $content, 'm={$content.message_id}'}"{xen:if '{$content.hasPreview}', ' class="PreviewTooltip" data-previewUrl="{xen:link conversations/preview, $content, 'm={$content.message_id}'}"'}>{xen:helper threadPrefix, $content}{$content.title}</a>'}
+			'posterParams=href="{xen:link conversations/message, $content, 'message_id={$content.message_id}'}"', 'poster={$content.username}',
+			'title=<a href="{xen:link conversations/message, $content, 'message_id={$content.message_id}'}"{xen:if '{$content.hasPreview}', ' class="PreviewTooltip" data-previewUrl="{xen:link conversations/preview, $content, 'message_id={$content.message_id}'}"'}>{xen:helper threadPrefix, $content}{$content.title}</a>'}
 		
 	</xen:if>
 
@@ -252,7 +252,7 @@
 		</div>
 	</div>
 </li>]]></template>
-    <template title="search_result_conversation_message" version_id="10000" version_string="1.0.0"><![CDATA[<li id="conversation_message-{$conversation_message.message_id}" class="searchResult conversation_message primaryContent{xen:if $conversation_message.isIgnored, ' ignored'}" data-author="{$conversation_message.username}">
+    <template title="search_result_conversation_message" version_id="1010001" version_string="1.0.0"><![CDATA[<li id="conversation_message-{$conversation_message.message_id}" class="searchResult conversation_message primaryContent{xen:if $conversation_message.isIgnored, ' ignored'}" data-author="{$conversation_message.username}">
 	<div class="listBlock posterAvatar"><xen:avatar user="$conversation_message" size="s" img="true" /></div>
 
 	<div class="listBlock main">
@@ -272,7 +272,7 @@
 		</div>
 	</div>
 </li>]]></template>
-    <template title="sv_conversation_message_ip" version_id="10001" version_string="1.0.1"><![CDATA[<xen:title>{xen:phrase sv_ip_information_for_conversation_message,
+    <template title="sv_conversation_message_ip" version_id="1010001" version_string="1.1.0"><![CDATA[<xen:title>{xen:phrase sv_ip_information_for_conversation_message,
 	'number={$message.message_id}',
 	'user={$message.username}'}</xen:title>
 
@@ -290,14 +290,14 @@
 		<xen:map from="$message" to="$content" />
 	</xen:include>
 </div>]]></template>
-    <template title="sv_conversation_message_like" version_id="1010000" version_string="1.1.0"><![CDATA[<xen:title>{xen:phrase 'sv_conversation_message_by_x', 'username={$comment.username}'} - {xen:if $like, '{xen:phrase sv_unlike_conversation_message}', '{xen:phrase sv_like_conversation_message}'}</xen:title>
+    <template title="sv_conversation_message_like" version_id="1010001" version_string="1.1.0"><![CDATA[<xen:title>{xen:phrase 'sv_conversation_message_by_x', 'username={$comment.username}'} - {xen:if $like, '{xen:phrase sv_unlike_conversation_message}', '{xen:phrase sv_like_conversation_message}'}</xen:title>
 
 <xen:navigation>
 	<xen:breadcrumb source="$nodeBreadCrumbs" />
-	<xen:breadcrumb href="{xen:link 'conversations/message', $conversation, 'm={$message.message_id}'}">{xen:helper threadPrefix, $conversation}{$conversation.title}</xen:breadcrumb>
+	<xen:breadcrumb href="{xen:link 'conversations/message', $conversation, 'message_id={$message.message_id}'}">{xen:helper threadPrefix, $conversation}{$conversation.title}</xen:breadcrumb>
 </xen:navigation>
 
-<form action="{xen:link 'conversations/like', $conversation, 'm={$message.message_id}'}" method="post" class="xenForm">
+<form action="{xen:link 'conversations/like', $conversation, 'message_id={$message.message_id}'}" method="post" class="xenForm">
 
 	<dl class="ctrlUnit fullWidth">
 		<dt></dt>
@@ -317,14 +317,14 @@
 
 	<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
 </form>]]></template>
-    <template title="sv_conversation_message_likes" version_id="1010000" version_string="1.1.0"><![CDATA[<xen:title>{xen:phrase 'sv_conversation_message_by_x', 'username={$comment.username}'} - {xen:phrase sv_members_who_liked_this_conversation_message}</xen:title>
+    <template title="sv_conversation_message_likes" version_id="1010001" version_string="1.1.0"><![CDATA[<xen:title>{xen:phrase 'sv_conversation_message_by_x', 'username={$comment.username}'} - {xen:phrase sv_members_who_liked_this_conversation_message}</xen:title>
 
 <xen:container var="$head.noindex">
 	<meta name="robots" content="noindex" /></xen:container>
 
 <xen:navigation>
 	<xen:breadcrumb source="$nodeBreadCrumbs" />
-	<xen:breadcrumb href="{xen:link 'conversations/message', $conversation, 'm={$message.message_id}'}">{xen:helper threadPrefix, $conversation}{$conversation.title}</xen:breadcrumb>
+	<xen:breadcrumb href="{xen:link 'conversations/message', $conversation, 'message_id={$message.message_id}'}">{xen:helper threadPrefix, $conversation}{$conversation.title}</xen:breadcrumb>
 </xen:navigation>
 
 <div class="section">
@@ -338,8 +338,8 @@
 	</ol>
 	<div class="sectionFooter overlayOnly"><a class="button primary OverlayCloser">{xen:phrase close}</a></div>
 </div>]]></template>
-    <template title="sv_conversation_message_public_controls" version_id="1010000" version_string="1.1.0"><![CDATA[<xen:if is="{$message.canLike}">
-  <a href="{xen:link conversations/like, $conversation, 'm={$message.message_id}'}" 
+    <template title="sv_conversation_message_public_controls" version_id="1010001" version_string="1.1.0"><![CDATA[<xen:if is="{$message.canLike}">
+  <a href="{xen:link conversations/like, $conversation, 'message_id={$message.message_id}'}" 
      class="LikeLink item control {xen:if $message.like_date, unlike, like}" data-container="#likes-message-{$message.message_id}">
      <span></span>
      <span class="LikeLabel">{xen:if $message.like_date, {xen:phrase unlike}, {xen:phrase like}}</span>
@@ -355,7 +355,7 @@
     <modification template="conversation_message" modification_key="SV_ConversationImprovements_conversation_message_2" description="Inject Like support #1" execution_order="10" enabled="1" action="str_replace">
       <find><![CDATA[<xen:include template="message">]]></find>
       <replace><![CDATA[$0
-<xen:set var="$likesUrl">{xen:link conversation/likes, $cconversation, 'm={$message.message_id}'}</xen:set>]]></replace>
+<xen:set var="$likesUrl">{xen:link conversation/likes, $cconversation, 'message_id={$message.message_id}'}</xen:set>]]></replace>
     </modification>
     <modification template="conversation_message" modification_key="SV_ConversationImprovements_conversation_message_3" description="Inject Like support #2" execution_order="10" enabled="1" action="preg_replace">
       <find><![CDATA[#(<xen:set var="\$messageAfterTemplate.*)(\s+</xen:set>)#si]]></find>
