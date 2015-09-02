@@ -239,7 +239,7 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
                 WHERE content_type = \'conversation_message\'
                 AND like_user_id = ?
             ) AS temp
-            INNER JOIN xf_conversation_message AS message ON (message.profile_post_id = temp.content_id)
+            INNER JOIN xf_conversation_message AS message ON (message.message_id = temp.content_id)
             SET like_users = REPLACE(like_users, ' .
             $db->quote('i:' . $oldUserId . ';s:8:"username";s:' . strlen($oldUsername) . ':"' . $oldUsername . '";') . ', ' .
             $db->quote('i:' . $newUserId . ';s:8:"username";s:' . strlen($newUsername) . ':"' . $newUsername . '";') . ')
