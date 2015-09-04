@@ -29,6 +29,30 @@ class SV_ConversationImprovements_Installer
 
         XenForo_Model::create('XenForo_Model_ContentType')->rebuildContentTypeCache();
 
+        $requireIndexing = array();
+
+        if ($version == 0)
+        {
+            $requireIndexing['conversation'] = true;
+            $requireIndexing['conversation_message'] = true;
+        }
+
+        // if Elastic Search is installed, determine if we need to push optimized mappings for the search types
+        SV_Utils_Install::updateXenEsMapping($requireIndexing, array(
+            'conversation' => array(
+                "properties" => array(
+                    "recipients" => array("type" => "long"),
+                    "conversation" => array("type" => "long"),
+                )
+            ),
+            'conversation_message' => array(
+                "properties" => array(
+                    "recipients" => array("type" => "long"),
+                    "conversation" => array("type" => "long"),
+                )
+            )
+        ));
+
         return true;
     }
 

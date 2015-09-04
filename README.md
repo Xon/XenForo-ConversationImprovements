@@ -47,9 +47,7 @@ Adds conversation likes. These Likes generate alerts, and additions to users new
 
 #Manual post-installation steps
 
-On installing for the first time, please rebuild the Search Index for the following content types:
-- Conversation
-- Conversation Messages
+The add-on will report conversation related content types that require re-indexing.
 
 #Performance impact
 
