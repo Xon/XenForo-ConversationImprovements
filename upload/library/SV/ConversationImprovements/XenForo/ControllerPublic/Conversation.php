@@ -14,6 +14,11 @@ class SV_ConversationImprovements_XenForo_ControllerPublic_Conversation extends 
             throw $this->getErrorOrNoPermissionResponseException($errorPhraseKey);
         }
 
+        if (!isset($conversationMessage['likes']))
+        {
+            throw $this->getErrorOrNoPermissionResponseException();
+        }
+
         $likeModel = $this->getModelFromCache('XenForo_Model_Like');
 
         $existingLike = $likeModel->getContentLikeByLikeUser('conversation_message', $messageId, XenForo_Visitor::getUserId());

@@ -221,7 +221,7 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
         $message['canViewIps'] = $this->canViewIps($conversation, $null, $viewingUser);
         $message['canLike'] = $this->canLikeConversationMessage($message, $conversation, $null, $viewingUser);
 
-        if ($message['likes'])
+        if (!empty($message['likes']))
         {
             $message['likeUsers'] = @unserialize($message['like_users']);
         }
