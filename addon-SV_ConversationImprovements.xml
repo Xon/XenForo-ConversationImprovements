@@ -357,6 +357,14 @@
       <replace><![CDATA[$0
 <xen:set var="$likesUrl">{xen:link conversation/likes, $cconversation, 'message_id={$message.message_id}'}</xen:set>]]></replace>
     </modification>
+    <modification template="message" modification_key="SV_ConversationImprovements_message_2" description="Workaround for buggy Post Ratings" execution_order="15" enabled="1" action="str_replace">
+      <find><![CDATA[<xen:hook name="dark_postrating_likes_bar" params="{xen:array 'post={$message}','message_id={$messageId}'}" />]]></find>
+      <replace><![CDATA[<xen:if is="{$message.thread_id}">
+$0
+<xen:else/>
+<div id="likes-{$messageId}"><xen:if is="{$message.likes}"><xen:include template="likes_summary" /></xen:if></div>
+</xen:if>]]></replace>
+    </modification>
     <modification template="conversation_add" modification_key="SV_ConversationSearch_conversation_add" description="Inject Search bar" execution_order="10" enabled="1" action="preg_replace">
       <find><![CDATA[#$#]]></find>
       <replace><![CDATA[<xen:container var="$searchBar.conversations"><xen:include template="search_bar_conversations_only" /></xen:container>]]></replace>
