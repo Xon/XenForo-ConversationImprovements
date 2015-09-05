@@ -159,6 +159,23 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
         ', 'user_id', $conversationId);
     }
 
+    public function getConversationsRecipients(array $conversationIds)
+    {
+        if (!$conversationIds)
+        {
+            return array();
+        }
+
+        $sql = implode(',', array_fill(0, count($conversationIds), '?'));
+
+        return $this->_getDb()->fetchAll('
+            SELECT conversation_recipient.*
+            FROM xf_conversation_recipient AS conversation_recipient
+            WHERE conversation_recipient.conversation_id IN (' .  $sql . ')
+            order by conversation_recipient.conversation_id
+        ', $conversationIds);
+    }
+
     public function canViewIps(array $conversation, &$errorPhraseKey = '', array $viewingUser = null)
     {
         return $this->_getUserModel()->canViewIps($errorPhraseKey, $viewingUser);
@@ -178,7 +195,7 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
             $conversation['all_recipients'] = $this->getConversationRecipientsForSearch($conversation['conversation_id']);
         }
 
-        return isset($conversation['all_recipients'][$viewingUser['user_id']]);
+        return isset($conversation['all_recipients'][$viewingUser['user_id']]) && ($conversation['all_recipients'][$viewingUser['user_id']]['recipient_state'] == 'active');
     }
 
     public function canReplyToConversation(array $conversation, &$errorPhraseKey = '', array $viewingUser = null)

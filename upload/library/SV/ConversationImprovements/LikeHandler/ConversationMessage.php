@@ -21,8 +21,17 @@ class SV_ConversationImprovements_LikeHandler_ConversationMessage extends XenFor
 
         $conversationIds = XenForo_Application::arrayColumn($messages, 'conversation_id');
         $conversations = $conversationModel->getConversationsForUserByIdsWithMessage($viewingUser['user_id'], $conversationIds);
+        // link up all recipients
+        $recipients = array();
+        $flattenedRecipients = $conversationModel->getConversationsRecipients($conversationIds);
+        foreach ($flattenedRecipients AS &$recipient)
+        {
+            $recipients[$recipient['conversation_id']][$recipient['user_id']] = $recipient;
+        }
+        // link up all conversations
         foreach ($conversations AS $key => &$conversation)
         {
+            $conversation['all_recipients'] = $recipients[$key];
             if (!$conversationModel->canViewConversation($conversation, $null, $viewingUser))
             {
                 unset($conversations[$key]);
@@ -31,9 +40,11 @@ class SV_ConversationImprovements_LikeHandler_ConversationMessage extends XenFor
 
         foreach ($messages AS $key => &$message)
         {
-            if (isset($conversations[$message['conversation_id']]))
+            $conversation_id = $message['conversation_id'];
+            if (isset($conversations[$conversation_id]))
             {
-                $message['title'] = $conversations[$message['conversation_id']]['title'];
+                $message['title'] = $conversations[$conversation_id]['title'];
+                $message['all_recipients'] = $conversations[$conversation_id]['all_recipients'];
             }
             else
             {

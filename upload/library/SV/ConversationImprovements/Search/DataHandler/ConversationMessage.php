@@ -119,7 +119,8 @@ class SV_ConversationImprovements_Search_DataHandler_ConversationMessage extends
     public function quickIndex(XenForo_Search_Indexer $indexer, array $contentIds)
     {
         if (!($this->enabled)) return false;
-        $messages = $this->_getConversationModel()->getConversationMessagesByIds($contentIds, array(
+        $conversationModel = $this->_getConversationModel();
+        $messages = $conversationModel->getConversationMessagesByIds($contentIds, array(
         ));
 
         $conversationIds = array();
@@ -128,13 +129,19 @@ class SV_ConversationImprovements_Search_DataHandler_ConversationMessage extends
             $conversationIds[] = $message['conversation_id'];
         }
 
-        $conversations = $this->_getConversationModel()->getConversationsByIds(array_unique($conversationIds));
-        foreach ($conversations AS $conversation_id => $conversation)
+        $conversations = $conversationModel->getConversationsByIds(array_unique($conversationIds));
+        $recipients = array();
+        $flattenedRecipients = $conversationModel->getConversationsRecipients($conversationIds);
+        foreach ($flattenedRecipients AS &$recipient)
         {
-            $conversations[$conversation_id]['all_recipients'] = $this->_getConversationModel()->getConversationRecipientsForSearch($conversation_id);
+            $recipients[$recipient['conversation_id']][$recipient['user_id']] = $recipient;
+        }
+        foreach ($conversations AS $conversation_id => &$conversation)
+        {
+            $conversations[$conversation_id]['all_recipients'] = $recipients[$conversation_id];
         }
 
-        foreach ($messages AS $message)
+        foreach ($messages AS &$message)
         {
             $conversation = (isset($conversations[$message['conversation_id']]) ? $conversations[$message['conversation_id']] : null);
             if (!$conversation)
@@ -195,7 +202,7 @@ class SV_ConversationImprovements_Search_DataHandler_ConversationMessage extends
     public function canViewResult(array $result, array $viewingUser)
     {
         if (!($this->enabled)) return false;
-        return $this->_getConversationModel()->canViewConversation($result['conversation'], $viewingUser);
+        return $this->_getConversationModel()->canViewConversation($result['conversation'], $null, $viewingUser);
     }
 
     /**
@@ -420,7 +427,7 @@ class SV_ConversationImprovements_Search_DataHandler_ConversationMessage extends
 
             if ($conversation )
             {
-                if($conversationModel->canViewConversation($result['conversation'], $viewingUser))
+                if($conversationModel->canViewConversation($result['conversation'], $null, $viewingUser))
                 {
                     $viewParams['search']['conversation'] = $conversation;
                 }

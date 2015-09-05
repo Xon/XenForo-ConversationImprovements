@@ -103,10 +103,18 @@ class SV_ConversationImprovements_Search_DataHandler_Conversation extends XenFor
     public function quickIndex(XenForo_Search_Indexer $indexer, array $contentIds)
     {
         if (!($this->enabled)) return false;
-        $conversations = $this->_getConversationModel()->getConversationsByIds($contentIds);
-
-        foreach ($conversations AS $conversation)
+        $conversationModel = $this->_getConversationModel();
+        $conversations = $conversationModel->getConversationsByIds($contentIds);
+        $recipients = array();
+        $flattenedRecipients = $conversationModel->getConversationsRecipients($contentIds);
+        foreach ($flattenedRecipients AS &$recipient)
         {
+            $recipients[$recipient['conversation_id']][$recipient['user_id']] = $recipient;
+        }
+
+        foreach ($conversations AS &$conversation)
+        {
+            $conversation['all_recipients'] = $recipients[$conversation_id];
             $this->insertIntoIndex($indexer, $conversation);
         }
 
@@ -137,7 +145,7 @@ class SV_ConversationImprovements_Search_DataHandler_Conversation extends XenFor
     public function canViewResult(array $result, array $viewingUser)
     {
         if (!($this->enabled)) return false;
-        return $this->_getConversationModel()->canViewConversation($result, $viewingUser);
+        return $this->_getConversationModel()->canViewConversation($result, $null, $viewingUser);
     }
 
     /**
