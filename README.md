@@ -7,6 +7,7 @@ Features:
 - Deadlock workaround.
 - Adds conversation search, with options to search by recipient.
 - New Conversation Permissions
+- Adds an 'IP' button like posts have which allows the IP of the user to be viewed.
 - Conversation Likes
 
 ### Deadlock workaround
