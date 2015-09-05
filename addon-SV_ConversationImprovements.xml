@@ -357,12 +357,6 @@
       <replace><![CDATA[$0
 <xen:set var="$likesUrl">{xen:link conversation/likes, $cconversation, 'message_id={$message.message_id}'}</xen:set>]]></replace>
     </modification>
-    <modification template="conversation_message" modification_key="SV_ConversationImprovements_conversation_message_3" description="Inject Like support #2" execution_order="10" enabled="1" action="preg_replace">
-      <find><![CDATA[#(<xen:set var="\$messageAfterTemplate.*)(\s+</xen:set>)#si]]></find>
-      <replace><![CDATA[$1
-<div id="likes-message-{$message.message_id}"><xen:if is="{$message.likes}"><xen:include template="likes_summary" /></xen:if></div>
-$2]]></replace>
-    </modification>
     <modification template="conversation_add" modification_key="SV_ConversationSearch_conversation_add" description="Inject Search bar" execution_order="10" enabled="1" action="preg_replace">
       <find><![CDATA[#$#]]></find>
       <replace><![CDATA[<xen:container var="$searchBar.conversations"><xen:include template="search_bar_conversations_only" /></xen:container>]]></replace>
