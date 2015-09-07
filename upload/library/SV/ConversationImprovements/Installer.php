@@ -12,9 +12,16 @@ class SV_ConversationImprovements_Installer
         SV_Utils_Install::removeOldAddons($addonsToUninstall);
 
         SV_Utils_Install::addColumn('xf_conversation_message', 'likes', 'INT UNSIGNED NOT NULL DEFAULT 0');
-        SV_Utils_Install::addColumn('xf_conversation_message', 'like_users', 'BLOB NOT NULL');
+        SV_Utils_Install::modifyColumn('xf_conversation_message', 'like_users', 'BLOB', 'BLOB');
+        SV_Utils_Install::addColumn('xf_conversation_message', 'like_users', 'BLOB');
 
         $db = XenForo_Application::getDb();
+
+        $db->query("insert ignore into xf_permission_entry (user_group_id, user_id, permission_group_id, permission_id, permission_value, permission_value_int)
+            select distinct user_group_id, user_id, convert(permission_group_id using utf8), 'canReply', permission_value, permission_value_int
+            from xf_permission_entry
+            where permission_group_id = 'conversation' and permission_id in ('start')
+        ");
 
         $db->query("
             INSERT IGNORE INTO xf_content_type_field
