@@ -23,6 +23,12 @@ class SV_ConversationImprovements_Installer
             where permission_group_id = 'conversation' and permission_id in ('start')
         ");
 
+        $db->query("insert ignore into xf_permission_entry (user_group_id, user_id, permission_group_id, permission_id, permission_value, permission_value_int)
+            select distinct user_group_id, user_id, convert(permission_group_id using utf8), 'replyLimit', permission_value, -1
+            from xf_permission_entry
+            where permission_group_id = 'conversation' and permission_id in ('start')
+        ");
+
         $db->query("
             INSERT IGNORE INTO xf_content_type_field
                 (content_type, field_name, field_value)
@@ -70,6 +76,11 @@ class SV_ConversationImprovements_Installer
         $db->query("
             DELETE FROM xf_content_type_field
             WHERE xf_content_type_field.field_value like '".self::AddonNameSpace."%'
+        ");
+
+        $db->query("
+            DELETE FROM xf_permission_entry
+            where permission_group_id = 'conversation' and permission_id in ('replyLimit', 'canReply')
         ");
 
         // if XF ever supports likes on conversations this will break it:
