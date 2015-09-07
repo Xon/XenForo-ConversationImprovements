@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="SV_ConvImprovements" title="Conversation Improvements" version_string="1.1.1" version_id="1010100" url="https://xenforo.com/community/resources/conversation-improvements-by-xon.4518/" install_callback_class="SV_ConversationImprovements_Installer" install_callback_method="install" uninstall_callback_class="SV_ConversationImprovements_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="SV_ConvImprovements" title="Conversation Improvements" version_string="1.1.2" version_id="1010200" url="https://xenforo.com/community/resources/conversation-improvements-by-xon.4518/" install_callback_class="SV_ConversationImprovements_Installer" install_callback_method="install" uninstall_callback_class="SV_ConversationImprovements_Installer" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -41,7 +41,9 @@
     <phrase title="sv_ip_information_for_conversation_message" version_id="10001" version_string="1.0.1"><![CDATA[IP address information for message #{number} by {user}]]></phrase>
     <phrase title="sv_like_conversation_message" version_id="1010000" version_string="1.1.0"><![CDATA[Like conversation message]]></phrase>
     <phrase title="sv_members_who_liked_this_conversation_message" version_id="1010000" version_string="1.1.0"><![CDATA[Members Who Liked This Conversation Message]]></phrase>
+    <phrase title="sv_messages_in_conversations" version_id="1010200" version_string="1.1.2"><![CDATA[Messages in Conversations]]></phrase>
     <phrase title="sv_no_one_has_liked_this_conversation_message_yet" version_id="1010000" version_string="1.1.0"><![CDATA[No one has liked this message yet.]]></phrase>
+    <phrase title="sv_someone_likes_one_of_your_messages_in_conversation" version_id="1010200" version_string="1.1.2"><![CDATA[Someone likes one of your messages in a conversation]]></phrase>
     <phrase title="sv_unlike_conversation_message" version_id="1010000" version_string="1.1.0"><![CDATA[Unlike conversation message]]></phrase>
     <phrase title="sv_x_liked_your_message_in_the_conversation_y" version_id="1010000" version_string="1.1.0"><![CDATA[{name} liked your message in the conversation {title}.]]></phrase>
     <phrase title="sv_x_liked_ys_message_in_the_conversation_z" version_id="1010000" version_string="1.1.0"><![CDATA[{name} liked <a {posterParams}>{poster}'s message</a> in the conversation {title}.]]></phrase>
@@ -345,8 +347,25 @@
      <span class="LikeLabel">{xen:if $message.like_date, {xen:phrase unlike}, {xen:phrase like}}</span>
   </a>
 </xen:if>]]></template>
+    <template title="sv_convimprovements_account_alert_preferences" version_id="1010200" version_string="1.1.2"><![CDATA[<h3 class="sectionHeader">{xen:phrase sv_messages_in_conversations}</h3>
+<dl class="ctrlUnit">
+	<dt>{xen:phrase receive_alert_when_someone}...</dt>
+	<dd>
+		<ul>
+			<li><input type="hidden" name="alertSet[conversation_message_like]" value="1" />
+				<label><input type="checkbox" value="1" name="alert[conversation_message_like]" {xen:checked "!{$alertOptOuts.conversation_message_like}"} autofocus="true" /> {xen:phrase likes_your_message}</label>
+				<p class="hint">{xen:phrase sv_someone_likes_one_of_your_messages_in_conversation}</p>
+			</li>
+		</ul>
+	</dd>
+</dl>]]></template>
   </templates>
   <public_template_modifications>
+    <modification template="account_alert_preferences" modification_key="SV_ConvImprovements_account_alert_preferences" description="" execution_order="4518" enabled="1" action="str_replace">
+      <find><![CDATA[<h3 class="sectionHeader">{xen:phrase messages_in_threads}</h3>]]></find>
+      <replace><![CDATA[<xen:include template="sv_convimprovements_account_alert_preferences" />
+$0]]></replace>
+    </modification>
     <modification template="conversation_message" modification_key="SV_ConversationImprovements_conversation_message_1" description="Inject public controls" execution_order="10" enabled="1" action="preg_replace">
       <find><![CDATA[#<div class="publicControls">\s*<xen:contentcheck>#si]]></find>
       <replace><![CDATA[$0
