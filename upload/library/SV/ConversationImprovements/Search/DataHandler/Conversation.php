@@ -112,7 +112,7 @@ class SV_ConversationImprovements_Search_DataHandler_Conversation extends XenFor
             $recipients[$recipient['conversation_id']][$recipient['user_id']] = $recipient;
         }
 
-        foreach ($conversations AS &$conversation)
+        foreach ($conversations AS $conversation_id => &$conversation)
         {
             $conversation['all_recipients'] = $recipients[$conversation_id];
             $this->insertIntoIndex($indexer, $conversation);
