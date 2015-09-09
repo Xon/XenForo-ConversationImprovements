@@ -83,13 +83,13 @@ class SV_ConversationImprovements_XenForo_ControllerPublic_Conversation extends 
         /** @var XenForo_Model_Like $likeModel */
         $likeModel = $this->getModelFromCache('XenForo_Model_Like');
 
-        $total = $likeModel->countContentLikes('conversation_message', $conversationId);
+        $total = $likeModel->countContentLikes('conversation_message', $messageId);
         if (!$total)
         {
             return $this->responseError(new XenForo_Phrase('sv_no_one_has_liked_this_conversation_message_yet'));
         }
 
-        $likes = $likeModel->getContentLikes('conversation_message', $conversationId, array(
+        $likes = $likeModel->getContentLikes('conversation_message', $messageId, array(
             'page' => $page,
             'perPage' => $perPage
         ));
