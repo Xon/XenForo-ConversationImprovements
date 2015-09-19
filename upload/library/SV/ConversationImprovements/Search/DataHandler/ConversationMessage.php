@@ -436,6 +436,13 @@ class SV_ConversationImprovements_Search_DataHandler_ConversationMessage extends
             }
         }
 
+        if (!empty($params['recipients']) && is_array($params['recipients']))
+        {
+            $users = $this->_getUserModel()->getUsersByIds($params['recipients']);
+            $usernames = XenForo_Application::arrayColumn($users, 'username');
+            $viewParams['search']['recipients'] = implode(', ', $usernames);
+        }
+
         return $controller->responseView('XenForo_ViewPublic_Search_Form_Post', 'search_form_conversation_message', $viewParams);
     }
 
