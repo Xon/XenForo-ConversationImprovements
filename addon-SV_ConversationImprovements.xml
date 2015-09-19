@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="SV_ConvImprovements" title="Conversation Improvements" version_string="1.1.2a" version_id="1010201" url="https://xenforo.com/community/resources/conversation-improvements-by-xon.4518/" install_callback_class="SV_ConversationImprovements_Installer" install_callback_method="install" uninstall_callback_class="SV_ConversationImprovements_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="SV_ConvImprovements" title="Conversation Improvements" version_string="1.1.3" version_id="1010300" url="https://xenforo.com/community/resources/conversation-improvements-by-xon.4518/" install_callback_class="SV_ConversationImprovements_Installer" install_callback_method="install" uninstall_callback_class="SV_ConversationImprovements_Installer" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -437,9 +437,12 @@ $1$2]]></replace>
       <replace><![CDATA[$1<li><a href="{xen:link search/member, '', 'user_id={$visitor.user_id}', 'content=conversation_message'}">{xen:phrase your_conversation_messages}</a></li>$1$2]]></replace>
     </modification>
     <modification template="search_form_tabs" modification_key="SV_ConversationSearch_search_form_tabs_1" description="Inject Search Tab" execution_order="10" enabled="1" action="preg_replace">
-      <find><![CDATA[#(<xen\:hook name\="search_form_tabs".*?)(\s*)(<li{xen:if "{\$searchType}.*?)(\s*</xen\:hook>)#si]]></find>
-      <replace><![CDATA[$1$2$3$2<li{xen:if "{$searchType} == 'conversation_message'", ' class="active"'}><a href="{xen:link search, '', 'type=conversation_message'}">{xen:phrase search_conversations}</a></li>
-$4]]></replace>
+      <find><![CDATA[#(<xen\:hook name\="search_form_tabs".*?)(\s*<li{xen:if "{\$searchType}.*?)(\s*</xen\:hook>)#si]]></find>
+      <replace><![CDATA[$1$2
+<xen:if is="{$visitor.user_id}">
+<li{xen:if "{$searchType} == 'conversation_message'", ' class="active"'}><a href="{xen:link search, '', 'type=conversation_message'}">{xen:phrase search_conversations}</a></li>
+</xen:if>
+$3]]></replace>
     </modification>
   </public_template_modifications>
   <bb_code_media_sites/>

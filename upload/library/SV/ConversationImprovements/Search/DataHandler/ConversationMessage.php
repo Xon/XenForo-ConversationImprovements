@@ -382,6 +382,8 @@ class SV_ConversationImprovements_Search_DataHandler_ConversationMessage extends
         if (!($this->enabled)) return null;
         $params = $input->filterSingle('c', XenForo_Input::ARRAY_SIMPLE);
 
+        if (!XenForo_Visitor::getUserId()) return null;
+
         $viewParams['search']['reply_count'] = empty($params['reply_count']) ? '' : $params['reply_count'];
 
         if (!empty($params['prefix']))
