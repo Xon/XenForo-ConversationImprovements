@@ -1,5 +1,4 @@
-XenForo-ConversationImprovements
-======================
+# XenForo-ConversationImprovements
 
 A collection of improvements to the XenForo Conversation system.
 
@@ -9,10 +8,11 @@ Features:
 - New Conversation Permissions
 - Adds an 'IP' button like posts have which allows the IP of the user to be viewed.
 - Conversation Likes
+- Conversation Message Edit history
 
 ### Deadlock workaround
 
-Fixes an issue where updating conversation counters can cause deadlocks
+Provides a workaround for a XenForo design issue where updating conversation counters can cause deadlocks.
 
 ### Adds conversation search, with options to search by recipient
 
@@ -39,6 +39,14 @@ Once the conversation has >10 replies, User A and User B can no longer post.
 ### Conversation Likes
 
 Adds conversation likes. These Likes generate alerts, and additions to users news feed (with permission checks) as expected.
+
+### Conversation Message Edit History
+
+Adds edit history for conversation messages.
+
+# Known Issues
+- Does not respect/implement any silent editing window.
+
 
 #Permissions
 

@@ -76,6 +76,15 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
             }
         }
 
+        if (!empty($fetchOptions['includeConversationTitle']))
+        {
+                $joinOptions['selectFields'] .= ',
+                    conversation.title';
+                $joinOptions['joinTables'] .= '
+                    LEFT JOIN xf_conversation_master AS conversation
+                        ON (conversation.conversation_id = message.conversation_id)';
+        }
+
         return $joinOptions;
     }
 
@@ -212,6 +221,28 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
         return parent::canReplyToConversation($conversation, $errorPhraseKey, $viewingUser);
     }
 
+    public function canViewMessageHistory(array $message, array $conversation, &$errorPhraseKey = '', array $viewingUser = null)
+    {
+        $this->standardizeViewingUserReference($viewingUser);
+
+        if (!$viewingUser['user_id'])
+        {
+            return false;
+        }
+
+        if (!XenForo_Application::getOptions()->editHistory['enabled'])
+        {
+            return false;
+        }
+
+        if (XenForo_Permission::hasPermission($viewingUser['permissions'], 'conversation', 'editAnyPost'))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     public function canLikeConversationMessage(array $message, array $conversation, &$errorPhraseKey = '', array $viewingUser = null)
     {
         $this->standardizeViewingUserReference($viewingUser);
@@ -237,6 +268,7 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
         $message = parent::prepareMessage($message, $conversation);
         $message['canViewIps'] = $this->canViewIps($conversation, $null, $viewingUser);
         $message['canLike'] = $this->canLikeConversationMessage($message, $conversation, $null, $viewingUser);
+        $message['canViewHistory'] = $this->canViewMessageHistory($message, $conversation, $null, $viewingUser);
 
         if (!empty($message['likes']))
         {

@@ -3,6 +3,7 @@
 class SV_ConversationImprovements_XenForo_DataWriter_ConversationMessage extends XFCP_SV_ConversationImprovements_XenForo_DataWriter_ConversationMessage
 {
     const OPTION_INDEX_FOR_SEARCH = 'indexForSearch';
+    const OPTION_LOG_EDIT = 'logEdit';
 
     const DATA_CONVERSATION = 'conversationInfo';
 
@@ -25,6 +26,9 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMessage extends
         $fields = parent::_getFields();
         $fields['xf_conversation_message']['likes'] = array('type' => self::TYPE_UINT_FORCED, 'default' => 0);
         $fields['xf_conversation_message']['like_users'] = array('type' => self::TYPE_SERIALIZED, 'default' => 'a:0:{}');
+        $fields["xf_conversation_message"]['last_edit_date'] = array('type' => self::TYPE_UINT, 'default' => 0);
+        $fields["xf_conversation_message"]['last_edit_user_id'] = array('type' => self::TYPE_UINT, 'default' => 0);
+        $fields["xf_conversation_message"]['edit_count'] = array('type' => self::TYPE_UINT_FORCED, 'default' => 0);
         return $fields;
     }
 
@@ -32,13 +36,48 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMessage extends
     {
         $defaultOptions = parent::_getDefaultOptions();
         $defaultOptions[self::OPTION_INDEX_FOR_SEARCH] = true;
+        $options = XenForo_Application::get('options');
+        $defaults[self::OPTION_LOG_EDIT] = $options->editHistory['enabled'];
         return $defaultOptions;
+    }
+
+    protected function _PreSave()
+    {
+        if ($this->isUpdate() && $this->isChanged('message'))
+        {
+            if (!$this->isChanged('last_edit_date'))
+            {
+                $this->set('last_edit_date', XenForo_Application::$time);
+                if (!$this->isChanged('last_edit_user_id'))
+                {
+                    $this->set('last_edit_user_id', XenForo_Visitor::getUserId());
+                }
+            }
+
+            if (!$this->isChanged('edit_count'))
+            {
+                $this->set('edit_count', $this->get('edit_count') + 1);
+            }
+        }
+        if ($this->isChanged('edit_count') && $this->get('edit_count') == 0)
+        {
+            $this->set('last_edit_date', 0);
+        }
+        if (!$this->get('last_edit_date'))
+        {
+            $this->set('last_edit_user_id', 0);
+        }
+        return parent::_PreSave();
     }
 
     protected function _postSave()
     {
         $this->_getConversationModel()->sv_deferRebuildUnreadCounters();
-        parent::_postSave();
+        if ($this->isUpdate() && $this->isChanged('message'))
+        {
+            $this->_insertEditHistory();
+        }
+        return parent::_postSave();
     }
 
     protected function _postSaveAfterTransaction()
@@ -58,6 +97,18 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMessage extends
         parent::delete();
         // update search index outside the transaction
         $this->_deleteFromSearchIndex();
+    }
+
+    protected function _insertEditHistory()
+    {
+        $historyDw = XenForo_DataWriter::create('XenForo_DataWriter_EditHistory', XenForo_DataWriter::ERROR_SILENT);
+        $historyDw->bulkSet(array(
+            'content_type' => 'conversation_message',
+            'content_id' => $this->get('message_id'),
+            'edit_user_id' => XenForo_Visitor::getUserId(),
+            'old_text' => $this->getExisting('message')
+        ));
+        $historyDw->save();
     }
 
     protected function _insertIntoSearchIndex()

@@ -136,6 +136,16 @@ class SV_ConversationImprovements_XenForo_ControllerPublic_Conversation extends 
         return $this->responseView('SV_ConversationImprovements_ViewPublic_Conversation_Message_Ip', 'sv_conversation_message_ip', $viewParams);
     }
 
+    public function actionMessageHistory()
+    {
+        $conversationId = $this->_input->filterSingle('conversation_id', XenForo_Input::UINT);
+        $messageId = $this->_input->filterSingle('message_id', XenForo_Input::UINT);
+
+        $this->_request->setParam('content_type', 'conversation_message');
+        $this->_request->setParam('content_id', $messageId);
+        return $this->responseReroute('XenForo_ControllerPublic_EditHistory', 'index');
+    }
+
     protected function _getUserModel()
     {
         return $this->getModelFromCache('XenForo_Model_User');
