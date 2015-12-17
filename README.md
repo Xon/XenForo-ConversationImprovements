@@ -3,16 +3,11 @@
 A collection of improvements to the XenForo Conversation system.
 
 Features:
-- Deadlock workaround.
 - Adds conversation search, with options to search by recipient.
 - New Conversation Permissions
 - Adds an 'IP' button like posts have which allows the IP of the user to be viewed.
 - Conversation Likes
 - Conversation Message Edit history
-
-### Deadlock workaround
-
-Provides a workaround for a XenForo design issue where updating conversation counters can cause deadlocks.
 
 ### Adds conversation search, with options to search by recipient
 

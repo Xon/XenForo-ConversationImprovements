@@ -20,15 +20,11 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
             $this->_firstMessageDw->setExtraData(self::DATA_CONVERSATION, $this->getMergedData());
         }
 
-        $this->_getConversationModel()->sv_deferRebuildUnreadCounters();
-
         parent::_postSave();
     }
 
     protected function _postSaveAfterTransaction()
     {
-        $this->_getConversationModel()->sv_rebuildPendingUnreadCounters();
-
         parent::_postSaveAfterTransaction();
 
         if ($this->getOption(self::OPTION_INDEX_FOR_SEARCH))
