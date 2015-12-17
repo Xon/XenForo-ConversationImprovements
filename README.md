@@ -9,6 +9,8 @@ Features:
 - Conversation Likes
 - Conversation Message Edit history
 
+Note; for forums with a large number of conversations see the Installing section!
+
 ### Adds conversation search, with options to search by recipient
 
 Users must be a member of the conversation to see the conversation in search results.
@@ -42,6 +44,16 @@ Adds edit history for conversation messages.
 # Known Issues
 - Does not respect/implement any silent editing window.
 
+#Installing for large forums
+
+For large forums, try manually adding all the columns in a single step:
+```
+ALTER TABLE `xf_conversation_message` 
+    ADD COLUMN `likes` INT UNSIGNED NOT NULL DEFAULT 0
+    ADD COLUMN `like_users` BLOB
+    ADD COLUMN `last_edit_date` int not null default 0
+    ADD COLUMN `last_edit_user_id` int not null default 0;
+```
 
 #Permissions
 
