@@ -46,7 +46,8 @@ Adds edit history for conversation messages.
 
 #Installing for large forums
 
-For large forums, try manually adding all the columns in a single step:
+For large forums, please try manually adding all the columns in a single step. 
+This took upto 5 minutes for 1.3 million conversation messages (compressed).
 
 For Like support & edit support:
 ```
