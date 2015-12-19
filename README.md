@@ -47,12 +47,21 @@ Adds edit history for conversation messages.
 #Installing for large forums
 
 For large forums, try manually adding all the columns in a single step:
+
+For Like support & edit support:
 ```
 ALTER TABLE `xf_conversation_message` 
-    ADD COLUMN `likes` INT UNSIGNED NOT NULL DEFAULT 0
-    ADD COLUMN `like_users` BLOB
-    ADD COLUMN `edit_count` int not null default 0
-    ADD COLUMN `last_edit_date` int not null default 0
+    ADD COLUMN `likes` INT UNSIGNED NOT NULL DEFAULT 0,
+    ADD COLUMN `like_users` BLOB,
+    ADD COLUMN `edit_count` int not null default 0,
+    ADD COLUMN `last_edit_date` int not null default 0,
+    ADD COLUMN `last_edit_user_id` int not null default 0;
+```
+Or just edit support:
+```
+ALTER TABLE `xf_conversation_message` 
+    ADD COLUMN `edit_count` int not null default 0,
+    ADD COLUMN `last_edit_date` int not null default 0,
     ADD COLUMN `last_edit_user_id` int not null default 0;
 ```
 
