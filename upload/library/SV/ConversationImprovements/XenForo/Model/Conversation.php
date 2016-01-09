@@ -278,7 +278,17 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
         if (!empty($message['likes']))
         {
             $message['likeUsers'] = @unserialize($message['like_users']);
+            if (empty($message['likeUsers']))
+            {
+                $message['likeUsers'] = array();
+                $message['likes'] = 0;
+            }
         }
+        else
+        {
+            $message['likeUsers'] = array();
+        }
+
         return $message;
     }
 
