@@ -8,6 +8,7 @@ Features:
 - Adds an 'IP' button like posts have which allows the IP of the user to be viewed.
 - Conversation Likes
 - Conversation Message Edit history
+- Conversation Title Edit history
 
 Note; for forums with a large number of conversations see the Installing section!
 
@@ -41,6 +42,10 @@ Adds conversation likes. These Likes generate alerts, and additions to users new
 
 Adds edit history for conversation messages.
 
+### Conversation Title Edit History
+
+Adds edit history for conversation's title, and implements a new moderator permission "Manage Conversations by anyone" to allow non-conversation starters to edit a conversation.
+
 # Known Issues
 - Does not respect/implement any silent editing window.
 
@@ -71,6 +76,7 @@ ALTER TABLE `xf_conversation_message`
 - Can Reply to Conversation.
 - Reply Limit for Conversation.
 - Like conversation messages.
+- Manage Conversations by anyone.
 
 #Manual post-installation steps
 
