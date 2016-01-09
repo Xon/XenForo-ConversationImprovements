@@ -146,6 +146,28 @@ class SV_ConversationImprovements_XenForo_ControllerPublic_Conversation extends 
         return $this->responseReroute('XenForo_ControllerPublic_EditHistory', 'index');
     }
 
+    public function actionConversationHistory()
+    {
+        $conversationId = $this->_input->filterSingle('conversation_id', XenForo_Input::UINT);
+
+        $this->_request->setParam('content_type', 'conversation');
+        $this->_request->setParam('content_id', $conversationId);
+        return $this->responseReroute('XenForo_ControllerPublic_EditHistory', 'index');
+    }
+
+    public function actionView()
+    {
+        $response = parent::actionView();
+
+        if ($response instanceof XenForo_ControllerResponse_View && !empty($response->params['conversation']))
+        {
+            $conversation = $response->params['conversation'];
+            $response->params['canViewConversationHistory'] = $this->_getConversationModel()->canViewConversationHistory($conversation);
+        }
+
+        return $response;
+    }
+
     protected function _getUserModel()
     {
         return $this->getModelFromCache('XenForo_Model_User');

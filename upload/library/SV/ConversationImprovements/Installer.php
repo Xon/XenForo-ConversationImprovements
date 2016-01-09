@@ -20,26 +20,45 @@ class SV_ConversationImprovements_Installer
         SV_Utils_Install::addColumn('xf_conversation_message', 'edit_count', 'int not null default 0');
         SV_Utils_Install::addColumn('xf_conversation_message', 'last_edit_date', 'int not null default 0');
         SV_Utils_Install::addColumn('xf_conversation_message', 'last_edit_user_id', 'int not null default 0');
+        SV_Utils_Install::addColumn('xf_conversation_master', 'conversation_edit_count', 'int not null default 0');
+        SV_Utils_Install::addColumn('xf_conversation_master', 'conversation_last_edit_date', 'int not null default 0');
+        SV_Utils_Install::addColumn('xf_conversation_master', 'conversation_last_edit_user_id', 'int not null default 0');
 
         $db = XenForo_Application::getDb();
 
-        $db->query("insert ignore into xf_permission_entry (user_group_id, user_id, permission_group_id, permission_id, permission_value, permission_value_int)
-            select distinct user_group_id, user_id, convert(permission_group_id using utf8), 'canReply', permission_value, permission_value_int
-            from xf_permission_entry
-            where permission_group_id = 'conversation' and permission_id in ('start')
-        ");
+        if ($version < 1010100)
+        {
+            $db->query("insert ignore into xf_permission_entry (user_group_id, user_id, permission_group_id, permission_id, permission_value, permission_value_int)
+                select distinct user_group_id, user_id, convert(permission_group_id using utf8), 'canReply', permission_value, permission_value_int
+                from xf_permission_entry
+                where permission_group_id = 'conversation' and permission_id in ('start')
+            ");
+        }
 
-        $db->query("insert ignore into xf_permission_entry (user_group_id, user_id, permission_group_id, permission_id, permission_value, permission_value_int)
-            select distinct user_group_id, user_id, convert(permission_group_id using utf8), 'replyLimit', permission_value, -1
-            from xf_permission_entry
-            where permission_group_id = 'conversation' and permission_id in ('start')
-        ");
+        if ($version < 1010200)
+        {
+            $db->query("insert ignore into xf_permission_entry (user_group_id, user_id, permission_group_id, permission_id, permission_value, permission_value_int)
+                select distinct user_group_id, user_id, convert(permission_group_id using utf8), 'replyLimit', permission_value, -1
+                from xf_permission_entry
+                where permission_group_id = 'conversation' and permission_id in ('start')
+            ");
+        }
+
+        if ($version < 1020003)
+        {
+            $db->query("insert ignore into xf_permission_entry (user_group_id, user_id, permission_group_id, permission_id, permission_value, permission_value_int)
+                select distinct user_group_id, user_id, convert(permission_group_id using utf8), 'sv_manageConversation', permission_value, permission_value_int
+                from xf_permission_entry
+                where permission_group_id = 'conversation' and permission_id in ('editAnyPost')
+            ");
+        }
 
         $db->query("
             INSERT IGNORE INTO xf_content_type_field
                 (content_type, field_name, field_value)
             VALUES
                 ('conversation', 'search_handler_class', '".self::AddonNameSpace."Search_DataHandler_Conversation'),
+                ('conversation', 'edit_history_handler_class', '".self::AddonNameSpace."EditHistoryHandler_Conversation'),
                 ('conversation_message', 'edit_history_handler_class', '".self::AddonNameSpace."EditHistoryHandler_ConversationMessage'),
                 ('conversation_message', 'like_handler_class', '".self::AddonNameSpace."LikeHandler_ConversationMessage'),
                 ('conversation_message', 'alert_handler_class', '".self::AddonNameSpace."AlertHandler_ConversationMessage'),
@@ -87,15 +106,19 @@ class SV_ConversationImprovements_Installer
 
         $db->query("
             DELETE FROM xf_permission_entry
-            where permission_group_id = 'conversation' and permission_id in ('replyLimit', 'canReply')
+            where permission_group_id = 'conversation' and permission_id in ('replyLimit', 'canReply', 'sv_manageConversation')
         ");
 
         // if XF ever supports likes on conversations this will break it:
         //SV_Utils_Install::dropColumn('xf_conversation_message', 'likes');
+        // if XF ever supports History on conversations this will break it:
         //SV_Utils_Install::dropColumn('xf_conversation_message', 'like_users');
         //SV_Utils_Install::dropColumn('xf_conversation_message', 'edit_count');
         //SV_Utils_Install::dropColumn('xf_conversation_message', 'last_edit_date');
         //SV_Utils_Install::dropColumn('xf_conversation_message', 'last_edit_user_id');
+        //SV_Utils_Install::dropColumn('xf_conversation_master', 'conversation_edit_count');
+        //SV_Utils_Install::dropColumn('xf_conversation_master', 'conversation_last_edit_date');
+        //SV_Utils_Install::dropColumn('xf_conversation_master', 'conversation_last_edit_user_id');
 
         XenForo_Model::create('XenForo_Model_ContentType')->rebuildContentTypeCache();
         return true;

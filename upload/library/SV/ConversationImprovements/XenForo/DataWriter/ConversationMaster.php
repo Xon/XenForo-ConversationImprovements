@@ -3,7 +3,20 @@
 class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends XFCP_SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster
 {
     const OPTION_INDEX_FOR_SEARCH = 'indexForSearch';
+    const OPTION_LOG_EDIT = 'logEdit';
     const DATA_CONVERSATION = 'conversationInfo';
+
+
+    protected function _getFields()
+    {
+        $fields = parent::_getFields();
+        $fields["xf_conversation_master"]['conversation_last_edit_date'] = array('type' => self::TYPE_UINT, 'default' => 0);
+        $fields["xf_conversation_master"]['conversation_last_edit_user_id'] = array('type' => self::TYPE_UINT, 'default' => 0);
+        $fields["xf_conversation_master"]['conversation_edit_count'] = array('type' => self::TYPE_UINT_FORCED, 'default' => 0);
+        $options = XenForo_Application::get('options');
+        $defaults[self::OPTION_LOG_EDIT] = $options->editHistory['enabled'];
+        return $fields;
+    }
 
     protected function _getDefaultOptions()
     {
@@ -12,8 +25,42 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
         return $defaultOptions;
     }
 
+    protected function _PreSave()
+    {
+        if ($this->isUpdate() && $this->isChanged('title'))
+        {
+            if (!$this->isChanged('conversation_last_edit_date'))
+            {
+                $this->set('conversation_last_edit_date', XenForo_Application::$time);
+                if (!$this->isChanged('conversation_last_edit_user_id'))
+                {
+                    $this->set('conversation_last_edit_user_id', XenForo_Visitor::getUserId());
+                }
+            }
+
+            if (!$this->isChanged('conversation_edit_count'))
+            {
+                $this->set('conversation_edit_count', $this->get('conversation_edit_count') + 1);
+            }
+        }
+        if ($this->isChanged('conversation_edit_count') && $this->get('conversation_edit_count') == 0)
+        {
+            $this->set('conversation_last_edit_date', 0);
+        }
+        if (!$this->get('conversation_last_edit_date'))
+        {
+            $this->set('conversation_last_edit_user_id', 0);
+        }
+        return parent::_PreSave();
+    }
+
     protected function _postSave()
     {
+        if ($this->isUpdate() && $this->isChanged('title'))
+        {
+            $this->_insertEditHistory();
+        }
+
         if ($this->_firstMessageDw)
         {
             $this->_firstMessageDw->setOption(self::OPTION_INDEX_FOR_SEARCH, false);
@@ -38,6 +85,18 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
         parent::delete();
         // update search index outside the transaction
         $this->_deleteFromSearchIndex();
+    }
+
+    protected function _insertEditHistory()
+    {
+        $historyDw = XenForo_DataWriter::create('XenForo_DataWriter_EditHistory', XenForo_DataWriter::ERROR_SILENT);
+        $historyDw->bulkSet(array(
+            'content_type' => 'conversation',
+            'content_id' => $this->get('conversation_id'),
+            'edit_user_id' => XenForo_Visitor::getUserId(),
+            'old_text' => $this->getExisting('title')
+        ));
+        $historyDw->save();
     }
 
     protected function _insertOrUpdateSearchIndex()

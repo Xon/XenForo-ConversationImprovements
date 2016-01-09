@@ -181,6 +181,46 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
         return parent::canReplyToConversation($conversation, $errorPhraseKey, $viewingUser);
     }
 
+    public function canViewConversationHistory(array $conversation, &$errorPhraseKey = '', array $viewingUser = null)
+    {
+        $this->standardizeViewingUserReference($viewingUser);
+
+        if (!$viewingUser['user_id'])
+        {
+            return false;
+        }
+
+        if (!XenForo_Application::getOptions()->editHistory['enabled'])
+        {
+            return false;
+        }
+
+        if (XenForo_Permission::hasPermission($viewingUser['permissions'], 'conversation', 'sv_mangeConversations'))
+        {
+            return true;
+        }
+
+        return ($conversation['user_id'] == $viewingUser['user_id']);
+    }
+
+    public function canEditConversation(array $conversation, &$errorPhraseKey = '', array $viewingUser = null)
+    {
+        $this->standardizeViewingUserReference($viewingUser);
+
+        $response = parent::canEditConversation($conversation, $errorPhraseKey, $viewingUser);
+        if($response)
+        {
+            return true;
+        }
+
+        if (XenForo_Permission::hasPermission($viewingUser['permissions'], 'conversation', 'sv_manageConversation'))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     public function canViewMessageHistory(array $message, array $conversation, &$errorPhraseKey = '', array $viewingUser = null)
     {
         $this->standardizeViewingUserReference($viewingUser);
@@ -195,7 +235,8 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
             return false;
         }
 
-        if (XenForo_Permission::hasPermission($viewingUser['permissions'], 'conversation', 'editAnyPost'))
+        if (XenForo_Permission::hasPermission($viewingUser['permissions'], 'conversation', 'editAnyPost') ||
+            XenForo_Permission::hasPermission($viewingUser['permissions'], 'conversation', 'sv_manageConversation') )
         {
             return true;
         }
