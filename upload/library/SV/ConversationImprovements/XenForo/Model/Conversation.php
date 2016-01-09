@@ -172,11 +172,15 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
         $this->standardizeViewingUserReference($viewingUser);
 
         if (!XenForo_Permission::hasPermission($viewingUser['permissions'], 'conversation', 'canReply'))
+        {
             return false;
+        }
 
         $replylimit = XenForo_Permission::hasPermission($viewingUser['permissions'], 'conversation', 'replyLimit');
         if ($replylimit >= 0 && $conversation['reply_count'] >= $replylimit)
+        {
             return false;
+        }
 
         return parent::canReplyToConversation($conversation, $errorPhraseKey, $viewingUser);
     }
@@ -195,7 +199,7 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
             return false;
         }
 
-        if (XenForo_Permission::hasPermission($viewingUser['permissions'], 'conversation', 'sv_mangeConversations'))
+        if (XenForo_Permission::hasPermission($viewingUser['permissions'], 'conversation', 'sv_manageConversation'))
         {
             return true;
         }
