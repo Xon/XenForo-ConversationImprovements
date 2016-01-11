@@ -7,7 +7,7 @@ class SV_ConversationImprovements_LikeHandler_ConversationMessage extends XenFor
         $dw = XenForo_DataWriter::create('XenForo_DataWriter_ConversationMessage');
         if ($dw->setExistingData($contentId))
         {
-            $dw->set('likes', $dw->get('likes') + $adjustAmount);
+            $dw->set('_likes', $dw->get('_likes') + $adjustAmount);
             $dw->set('like_users', $latestLikes);
             $dw->save();
         }

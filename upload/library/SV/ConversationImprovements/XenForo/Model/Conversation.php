@@ -275,18 +275,23 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
         $message['canLike'] = $this->canLikeConversationMessage($message, $conversation, $null, $viewingUser);
         $message['canViewHistory'] = $this->canViewMessageHistory($message, $conversation, $null, $viewingUser);
 
-        if (!empty($message['likes']))
+        if (!isset($message['likes']))
         {
-            $message['likeUsers'] = @unserialize($message['like_users']);
-            if (empty($message['likeUsers']))
+            if (!empty($message['_likes']))
             {
-                $message['likeUsers'] = array();
-                $message['likes'] = 0;
+                $message['likes'] = $message['_likes'];
+                $message['likeUsers'] = @unserialize($message['like_users']);
+                if (empty($message['likeUsers']))
+                {
+                    $message['likeUsers'] = array();
+                    $message['likes'] = 0;
+                }
             }
-        }
-        else
-        {
-            $message['likeUsers'] = array();
+            else
+            {
+                $message['likes'] = 0;
+                $message['likeUsers'] = array();
+            }
         }
 
         return $message;

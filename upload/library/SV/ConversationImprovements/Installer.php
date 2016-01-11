@@ -11,12 +11,19 @@ class SV_ConversationImprovements_Installer
         $addonsToUninstall = array('SV_ConversationSearch' => array(), 'SVConversationPermissions' => array());
         SV_Utils_Install::removeOldAddons($addonsToUninstall);
 
-        SV_Utils_Install::addColumn('xf_conversation_message', 'likes', 'INT UNSIGNED NOT NULL DEFAULT 0');
-        if ($version && $version <= 1010100)
+        if ($version > 1000301 && $version <= 1020200)
         {
-            SV_Utils_Install::modifyColumn('xf_conversation_message', 'like_users', 'BLOB', 'BLOB');
+            SV_Utils_Install::renameColumn('xf_conversation_message', 'likes', '_likes', 'INT UNSIGNED NOT NULL DEFAULT 0');
         }
-        SV_Utils_Install::addColumn('xf_conversation_message', 'like_users', 'BLOB');
+        $db = XenForo_Application::get('db');
+        if (!$db->fetchRow("SHOW COLUMNS FROM `xf_conversation_message` WHERE Field = 'likes'"))
+        {
+            SV_Utils_Install::addColumn('xf_conversation_message', '_likes', 'INT UNSIGNED NOT NULL DEFAULT 0');
+            if ($version && $version <= 1010100)
+            {
+                SV_Utils_Install::modifyColumn('xf_conversation_message', 'like_users', 'BLOB', 'BLOB');
+            }
+        }
         SV_Utils_Install::addColumn('xf_conversation_message', 'edit_count', 'int not null default 0');
         SV_Utils_Install::addColumn('xf_conversation_message', 'last_edit_date', 'int not null default 0');
         SV_Utils_Install::addColumn('xf_conversation_message', 'last_edit_user_id', 'int not null default 0');
@@ -119,6 +126,18 @@ class SV_ConversationImprovements_Installer
         //SV_Utils_Install::dropColumn('xf_conversation_master', 'conversation_edit_count');
         //SV_Utils_Install::dropColumn('xf_conversation_master', 'conversation_last_edit_date');
         //SV_Utils_Install::dropColumn('xf_conversation_master', 'conversation_last_edit_user_id');
+
+        /*
+        $db->query("
+            DELETE FROM xf_liked_content
+            WHERE content_type = 'conversation_message';
+        ");
+
+        $db->query("
+            DELETE FROM xf_edit_history
+            WHERE content_type in ('conversation', 'conversation_message');
+        ");
+        */
 
         XenForo_Model::create('XenForo_Model_ContentType')->rebuildContentTypeCache();
         return true;

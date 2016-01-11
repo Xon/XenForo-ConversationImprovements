@@ -24,8 +24,11 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMessage extends
     protected function _getFields()
     {
         $fields = parent::_getFields();
-        $fields['xf_conversation_message']['likes'] = array('type' => self::TYPE_UINT_FORCED, 'default' => 0);
-        $fields['xf_conversation_message']['like_users'] = array('type' => self::TYPE_SERIALIZED, 'default' => 'a:0:{}');
+        if (!isset($fields['xf_conversation_message']['likes']))
+        {
+            $fields['xf_conversation_message']['_likes'] = array('type' => self::TYPE_UINT_FORCED, 'default' => 0);
+            $fields['xf_conversation_message']['like_users'] = array('type' => self::TYPE_SERIALIZED, 'default' => 'a:0:{}');
+        }
         $fields["xf_conversation_message"]['last_edit_date'] = array('type' => self::TYPE_UINT, 'default' => 0);
         $fields["xf_conversation_message"]['last_edit_user_id'] = array('type' => self::TYPE_UINT, 'default' => 0);
         $fields["xf_conversation_message"]['edit_count'] = array('type' => self::TYPE_UINT_FORCED, 'default' => 0);
