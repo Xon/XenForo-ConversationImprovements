@@ -118,17 +118,16 @@ class SV_ConversationImprovements_Installer
         ");
 
         // if XF ever supports likes on conversations this will break it:
-        //SV_Utils_Install::dropColumn('xf_conversation_message', 'likes');
+        SV_Utils_Install::dropColumn('xf_conversation_message', '_likes');        
+        SV_Utils_Install::dropColumn('xf_conversation_message', 'like_users');
         // if XF ever supports History on conversations this will break it:
-        //SV_Utils_Install::dropColumn('xf_conversation_message', 'like_users');
-        //SV_Utils_Install::dropColumn('xf_conversation_message', 'edit_count');
-        //SV_Utils_Install::dropColumn('xf_conversation_message', 'last_edit_date');
-        //SV_Utils_Install::dropColumn('xf_conversation_message', 'last_edit_user_id');
-        //SV_Utils_Install::dropColumn('xf_conversation_master', 'conversation_edit_count');
-        //SV_Utils_Install::dropColumn('xf_conversation_master', 'conversation_last_edit_date');
-        //SV_Utils_Install::dropColumn('xf_conversation_master', 'conversation_last_edit_user_id');
+        SV_Utils_Install::dropColumn('xf_conversation_message', 'edit_count');
+        SV_Utils_Install::dropColumn('xf_conversation_message', 'last_edit_date');
+        SV_Utils_Install::dropColumn('xf_conversation_message', 'last_edit_user_id');
+        SV_Utils_Install::dropColumn('xf_conversation_master', 'conversation_edit_count');
+        SV_Utils_Install::dropColumn('xf_conversation_master', 'conversation_last_edit_date');
+        SV_Utils_Install::dropColumn('xf_conversation_master', 'conversation_last_edit_user_id');
 
-        /*
         $db->query("
             DELETE FROM xf_liked_content
             WHERE content_type = 'conversation_message';
@@ -138,7 +137,6 @@ class SV_ConversationImprovements_Installer
             DELETE FROM xf_edit_history
             WHERE content_type in ('conversation', 'conversation_message');
         ");
-        */
 
         XenForo_Model::create('XenForo_Model_ContentType')->rebuildContentTypeCache();
         return true;
