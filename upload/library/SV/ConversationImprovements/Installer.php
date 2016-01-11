@@ -19,11 +19,12 @@ class SV_ConversationImprovements_Installer
         if (!$db->fetchRow("SHOW COLUMNS FROM `xf_conversation_message` WHERE Field = 'likes'"))
         {
             SV_Utils_Install::addColumn('xf_conversation_message', '_likes', 'INT UNSIGNED NOT NULL DEFAULT 0');
-            if ($version && $version <= 1010100)
-            {
-                SV_Utils_Install::modifyColumn('xf_conversation_message', 'like_users', 'BLOB', 'BLOB');
-            }
         }
+        if ($version && $version <= 1010100)
+        {
+            SV_Utils_Install::modifyColumn('xf_conversation_message', 'like_users', 'BLOB', 'BLOB');
+        }
+        SV_Utils_Install::addColumn('xf_conversation_message', 'like_users', 'BLOB');
         SV_Utils_Install::addColumn('xf_conversation_message', 'edit_count', 'int not null default 0');
         SV_Utils_Install::addColumn('xf_conversation_message', 'last_edit_date', 'int not null default 0');
         SV_Utils_Install::addColumn('xf_conversation_message', 'last_edit_user_id', 'int not null default 0');
