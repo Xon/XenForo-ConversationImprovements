@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="SV_ConvImprovements" title="Conversation Improvements" version_string="1.2.2" version_id="1020200" url="https://xenforo.com/community/resources/conversation-improvements-by-xon.4518/" install_callback_class="SV_ConversationImprovements_Installer" install_callback_method="install" uninstall_callback_class="SV_ConversationImprovements_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="SV_ConvImprovements" title="Conversation Improvements" version_string="1.2.3" version_id="1020300" url="https://xenforo.com/community/resources/conversation-improvements-by-xon.4518/" install_callback_class="SV_ConversationImprovements_Installer" install_callback_method="install" uninstall_callback_class="SV_ConversationImprovements_Installer" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -354,10 +354,10 @@
      <span class="LikeLabel">{xen:if $message.like_date, {xen:phrase unlike}, {xen:phrase like}}</span>
   </a>
 </xen:if>]]></template>
-    <template title="sv_conversation_view_description" version_id="1020003" version_string="1.2.0"><![CDATA[<xen:description>
+    <template title="sv_conversation_view_description" version_id="1020300" version_string="1.2.3"><![CDATA[<xen:description>
 	{xen:phrase sv_conversation_started_by_x_date_y,
 		'name={xen:helper username, $conversation}',
-		'date=<a href="{xen:link conversations, $conversation}">{xen:datetime $conversation.post_date, html}</a>'}
+		'date=<a href="{xen:link conversations, $conversation}">{xen:datetime $conversation.start_date, html}</a>'}
 
 	<xen:if is="{$conversation.conversation_edit_count} && {$canViewConversationHistory}">
 		<span class="conversation_history ToggleTriggerAnchor">
