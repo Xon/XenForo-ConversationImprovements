@@ -70,7 +70,7 @@ class SV_ConversationImprovements_LikeHandler_ConversationMessage extends XenFor
 
     public function batchUpdateContentUser($oldUserId, $newUserId, $oldUsername, $newUsername)
     {
-        if (!$enabled)
+        if (!$this->enabled)
         {
             return;
         }
