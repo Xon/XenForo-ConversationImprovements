@@ -12,6 +12,11 @@ class SV_ConversationImprovements_Deferred_SingleConversationIndex extends XenFo
 
         $conversationId = $data['conversationId'];
         $conversationModel = XenForo_Model::create('XenForo_Model_Conversation');
+        if (!class_exists('XFCP_SV_ConversationImprovements_XenForo_Model_Conversation', false))
+        {
+            return false;
+        }
+
         $conversation = $conversationModel->getConversationMasterById($conversationId);
         $messagesPerPage = XenForo_Application::get('options')->messagesPerPage;
 

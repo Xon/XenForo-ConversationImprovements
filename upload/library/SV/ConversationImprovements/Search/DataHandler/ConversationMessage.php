@@ -2,7 +2,9 @@
 
 class SV_ConversationImprovements_Search_DataHandler_ConversationMessage extends XenForo_Search_DataHandler_Abstract
 {
-    var $enabled = false;
+    protected $enabled = false;
+    protected $_conversationModel = null;
+    protected $_userModel = null;
 
     public function __construct()
     {
@@ -10,9 +12,6 @@ class SV_ConversationImprovements_Search_DataHandler_ConversationMessage extends
         $this->_getConversationModel();
         $this->enabled = class_exists('XFCP_SV_ConversationImprovements_XenForo_Model_Conversation', false);
     }
-
-    protected $_conversationModel = null;
-    protected $_userModel = null;
 
     /**
      * Inserts into (or replaces a record) in the index.
@@ -497,7 +496,7 @@ class SV_ConversationImprovements_Search_DataHandler_ConversationMessage extends
 
     protected function _getConversationModel()
     {
-        if (!$this->_conversationModel)
+        if ($this->_conversationModel === null)
         {
             $this->_conversationModel = XenForo_Model::create('XenForo_Model_Conversation');
         }
@@ -506,7 +505,7 @@ class SV_ConversationImprovements_Search_DataHandler_ConversationMessage extends
 
     protected function _getUserModel()
     {
-        if (!$this->_userModel)
+        if ($this->_userModel === null)
         {
             $this->_userModel = XenForo_Model::create('XenForo_Model_User');
         }

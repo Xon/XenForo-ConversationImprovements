@@ -3,9 +3,23 @@
 class SV_ConversationImprovements_EditHistoryHandler_Conversation extends XenForo_EditHistoryHandler_Abstract
 {
     protected $_prefix = 'conversations';
+    protected $enabled = false;
+    protected $_conversationModel = null;
+
+    public function __construct()
+    {
+        // use the proxy class existence as a cheap check for if this addon is enabled.
+        $this->_getConversationModel();
+        $this->enabled = class_exists('XFCP_SV_ConversationImprovements_XenForo_Model_Conversation', false);
+    }
 
     protected function _getContent($contentId, array $viewingUser)
     {
+        if (!$this->enabled)
+        {
+            return array();
+        }
+
         $conversationModel = $this->_getConversationModel();
 
         $conversations = $conversationModel->getConversationsByIds($contentId);
@@ -85,8 +99,6 @@ class SV_ConversationImprovements_EditHistoryHandler_Conversation extends XenFor
 
         return $dw->save();
     }
-
-    protected $_conversationModel = null;
 
     protected function _getConversationModel()
     {

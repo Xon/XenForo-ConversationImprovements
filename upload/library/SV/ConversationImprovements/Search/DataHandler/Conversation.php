@@ -2,7 +2,8 @@
 
 class SV_ConversationImprovements_Search_DataHandler_Conversation extends XenForo_Search_DataHandler_Abstract
 {
-    var $enabled = false;
+    protected $enabled = false;
+    protected $_conversationModel = null;
 
     public function __construct()
     {
@@ -10,8 +11,6 @@ class SV_ConversationImprovements_Search_DataHandler_Conversation extends XenFor
         $this->_getConversationModel();
         $this->enabled = class_exists('XFCP_SV_ConversationImprovements_XenForo_Model_Conversation', false);
     }
-
-    protected $_conversationModel = null;
 
     /**
      * Inserts into (or replaces a record) in the index.
@@ -197,7 +196,7 @@ class SV_ConversationImprovements_Search_DataHandler_Conversation extends XenFor
 
     protected function _getConversationModel()
     {
-        if (!$this->_conversationModel)
+        if ($this->_conversationModel === null)
         {
             $this->_conversationModel = XenForo_Model::create('XenForo_Model_Conversation');
         }

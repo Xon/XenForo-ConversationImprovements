@@ -2,10 +2,23 @@
 
 class SV_ConversationImprovements_NewsFeedHandler_ConversationMessage extends XenForo_NewsFeedHandler_Abstract
 {
-    var $_conversationModel = null;
+    protected $enabled = false;
+    protected $_conversationModel = null;
+
+    public function __construct()
+    {
+        // use the proxy class existence as a cheap check for if this addon is enabled.
+        $this->_getConversationModel();
+        $this->enabled = class_exists('XFCP_SV_ConversationImprovements_XenForo_Model_Conversation', false);
+    }
 
     public function getContentByIds(array $contentIds, $model, array $viewingUser)
     {
+        if (!$this->enabled)
+        {
+            return array();
+        }
+
         $conversationModel = $this->_getConversationModel();
 
         $messages = $conversationModel->getConversationMessagesByIds($contentIds);
@@ -45,19 +58,18 @@ class SV_ConversationImprovements_NewsFeedHandler_ConversationMessage extends Xe
         return $messages;
     }
 
-	public function canViewNewsFeedItem(array $item, $content, array $viewingUser)
-	{
+    public function canViewNewsFeedItem(array $item, $content, array $viewingUser)
+    {
         // permission check occurs in getContentByIds()
         return true;
-	}
+    }
 
     protected function _getConversationModel()
     {
-        if (empty($this->_conversationModel))
+        if ($this->_conversationModel === null)
         {
             $this->_conversationModel = XenForo_Model::create('XenForo_Model_Conversation');
         }
-
         return $this->_conversationModel;
     }
 }
