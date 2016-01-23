@@ -9,6 +9,7 @@ Features:
 - Conversation Likes
 - Conversation Message Edit history
 - Conversation Title Edit history
+- Allow conversations with no-one.
 
 Note; for forums with a large number of conversations see the Installing section!
 
@@ -57,7 +58,7 @@ This took upto 5 minutes for 1.3 million conversation messages (compressed).
 For Like support & edit support:
 ```
 ALTER TABLE `xf_conversation_message` 
-    ADD COLUMN `likes` INT UNSIGNED NOT NULL DEFAULT 0,
+    ADD COLUMN `_likes` INT UNSIGNED NOT NULL DEFAULT 0,
     ADD COLUMN `like_users` BLOB,
     ADD COLUMN `edit_count` int not null default 0,
     ADD COLUMN `last_edit_date` int not null default 0,

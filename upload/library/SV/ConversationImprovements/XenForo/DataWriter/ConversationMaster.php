@@ -51,7 +51,16 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
         {
             $this->set('conversation_last_edit_user_id', 0);
         }
-        return parent::_PreSave();
+        parent::_PreSave();
+        if ($this->isInsert() && !$this->_newRecipients && XenForo_Application::getOptions()->sv_conversation_with_no_one)
+        {
+            if (!empty($this->_errors['recipients']) && 
+                $this->_errors['recipients'] instanceof XenForo_Phrase &&
+                $this->_errors['recipients']->getPhraseName() == 'please_enter_at_least_one_valid_recipient')
+            {
+                unset($this->_errors['recipients']);
+            }
+        }
     }
 
     protected function _postSave()
