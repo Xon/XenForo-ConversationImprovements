@@ -23,7 +23,7 @@ class SV_ConversationImprovements_EditHistoryHandler_ConversationMessage extends
         $conversationModel = $this->_getConversationModel();
 
         return $conversationModel->getConversationMessageById($contentId, array(
-            'includeConversationTitle' => true
+            'includeConversation' => true
         ));
     }
 

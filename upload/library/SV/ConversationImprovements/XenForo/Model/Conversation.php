@@ -36,10 +36,10 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
             }
         }
 
-        if (!empty($fetchOptions['includeConversationTitle']))
+        if (!empty($fetchOptions['includeConversation']))
         {
                 $joinOptions['selectFields'] .= ',
-                    conversation.title';
+                    conversation.*';
                 $joinOptions['joinTables'] .= '
                     LEFT JOIN xf_conversation_master AS conversation
                         ON (conversation.conversation_id = message.conversation_id)';
@@ -246,6 +246,18 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
         }
 
         return false;
+    }
+
+    public function canEditMessage(array $message, array $conversation, &$errorPhraseKey = '', array $viewingUser = null)
+    {
+        $this->standardizeViewingUserReference($viewingUser);
+
+        if (XenForo_Permission::hasPermission($viewingUser['permissions'], 'conversation', 'sv_manageConversation') )
+        {
+            return true;
+        }
+
+        return parent::canEditMessage($message, $conversation, $errorPhraseKey, $viewingUser);
     }
 
     public function canLikeConversationMessage(array $message, array $conversation, &$errorPhraseKey = '', array $viewingUser = null)
