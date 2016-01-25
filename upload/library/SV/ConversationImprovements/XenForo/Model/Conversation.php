@@ -39,7 +39,9 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
         if (!empty($fetchOptions['includeConversation']))
         {
                 $joinOptions['selectFields'] .= ',
-                    conversation.*';
+                    conversation.*, conversation.user_id AS conversation_user_id, conversation.username AS conversation_username,
+                    message.user_id, message.username
+                ';
                 $joinOptions['joinTables'] .= '
                     LEFT JOIN xf_conversation_master AS conversation
                         ON (conversation.conversation_id = message.conversation_id)';
