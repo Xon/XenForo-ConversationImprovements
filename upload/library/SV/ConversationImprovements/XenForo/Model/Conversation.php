@@ -52,6 +52,11 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
 
     public function getConversationMessagesByIds($messageIds, array $fetchOptions = array())
     {
+        if (empty($messageIds))
+        {
+            return array();
+        }
+
         $joinOptions = $this->prepareMessageFetchOptions($fetchOptions);
 
         return $this->fetchAllKeyed('
@@ -83,6 +88,11 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
 
     public function getConversationsByIds($conversationIds)
     {
+        if (empty($conversationIds))
+        {
+            return array();
+        }
+
         return $this->fetchAllKeyed('
             SELECT conversation_master.*
             FROM xf_conversation_master AS conversation_master
