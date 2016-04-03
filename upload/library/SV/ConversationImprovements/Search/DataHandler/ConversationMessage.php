@@ -426,9 +426,9 @@ class SV_ConversationImprovements_Search_DataHandler_ConversationMessage extends
 
             $conversation = $conversationModel->getConversationForUser($params['conversation'], $viewingUser);
 
-            if ($conversation )
+            if ($conversation)
             {
-                if($conversationModel->canViewConversation($params['conversation'], $null, $viewingUser))
+                if($conversationModel->canViewConversation($conversation, $null, $viewingUser))
                 {
                     $viewParams['search']['conversation'] = $conversation;
                 }
