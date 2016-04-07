@@ -137,7 +137,13 @@ class SV_ConversationImprovements_Search_DataHandler_ConversationMessage extends
         }
         foreach ($conversations AS $conversation_id => &$conversation)
         {
-            $conversations[$conversation_id]['all_recipients'] = $recipients[$conversation_id];
+            $conversation['all_recipients'] = isset($recipients[$conversation_id])
+                                              ? $recipients[$conversation_id]
+                                              : array();
+            if (empty($conversation['all_recipients']))
+            {
+                unset($conversations[$conversation_id]);
+            }
         }
 
         foreach ($messages AS &$message)

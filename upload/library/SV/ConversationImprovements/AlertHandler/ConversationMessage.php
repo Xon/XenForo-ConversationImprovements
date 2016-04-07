@@ -33,12 +33,14 @@ class SV_ConversationImprovements_AlertHandler_ConversationMessage extends XenFo
             $recipients[$recipient['conversation_id']][$recipient['user_id']] = $recipient;
         }
         // link up all conversations
-        foreach ($conversations AS $key => &$conversation)
+        foreach ($conversations AS $conversation_id => &$conversation)
         {
-            $conversation['all_recipients'] = $recipients[$key];
+            $conversation['all_recipients'] = isset($recipients[$conversation_id])
+                                              ? $recipients[$conversation_id]
+                                              : array();
             if (!$conversationModel->canViewConversation($conversation, $null, $viewingUser))
             {
-                //unset($conversations[$key]);
+                unset($conversations[$conversation_id]);
             }
         }
 

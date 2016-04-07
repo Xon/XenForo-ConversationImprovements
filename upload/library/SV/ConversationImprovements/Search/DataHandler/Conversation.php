@@ -113,7 +113,13 @@ class SV_ConversationImprovements_Search_DataHandler_Conversation extends XenFor
 
         foreach ($conversations AS $conversation_id => &$conversation)
         {
-            $conversation['all_recipients'] = $recipients[$conversation_id];
+            $conversation['all_recipients'] = isset($recipients[$conversation_id])
+                                              ? $recipients[$conversation_id]
+                                              : array();
+            if (empty($conversation['all_recipients']))
+            {
+                continue;
+            }
             $this->insertIntoIndex($indexer, $conversation);
         }
 

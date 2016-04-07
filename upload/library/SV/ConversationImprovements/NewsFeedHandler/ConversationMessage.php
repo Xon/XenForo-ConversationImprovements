@@ -35,7 +35,9 @@ class SV_ConversationImprovements_NewsFeedHandler_ConversationMessage extends Xe
         // link up all conversations
         foreach ($conversations AS $key => &$conversation)
         {
-            $conversation['all_recipients'] = $recipients[$key];
+            $conversation['all_recipients'] = isset($recipients[$conversation_id])
+                                              ? $recipients[$conversation_id]
+                                              : array();
             if (!$conversationModel->canViewConversation($conversation, $null, $viewingUser))
             {
                 unset($conversations[$key]);
