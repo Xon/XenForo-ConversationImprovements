@@ -33,7 +33,7 @@ class SV_ConversationImprovements_NewsFeedHandler_ConversationMessage extends Xe
             $recipients[$recipient['conversation_id']][$recipient['user_id']] = $recipient;
         }
         // link up all conversations
-        foreach ($conversations AS $key => &$conversation)
+        foreach ($conversations AS $conversation_id => &$conversation)
         {
             $conversation['all_recipients'] = isset($recipients[$conversation_id])
                                               ? $recipients[$conversation_id]
