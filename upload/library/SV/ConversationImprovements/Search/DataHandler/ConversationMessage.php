@@ -187,12 +187,20 @@ class SV_ConversationImprovements_Search_DataHandler_ConversationMessage extends
         $conversations = $conversationModel->getConversationsForUserByIds($viewingUser['user_id'], $conversationIds);
 
         // unflatten conversation recipients in a single query
+        $recipients = array();
         $flattenedRecipients = $conversationModel->getConversationsRecipients($conversationIds);
         foreach ($flattenedRecipients AS &$recipient)
         {
-            $conversations[$recipient['conversation_id']]['all_recipients'][$recipient['user_id']] = $recipient;
+            $recipients[$recipient['conversation_id']][$recipient['user_id']] = $recipient;
         }
-
+        // link up all conversations
+        foreach ($conversations AS $conversation_id => &$conversation)
+        {
+            $conversation['all_recipients'] = isset($recipients[$conversation_id])
+                                              ? $recipients[$conversation_id]
+                                              : array();
+        }
+        
         foreach ($messages AS $messageId => &$message)
         {
             $message['conversation'] = (isset($conversations[$message['conversation_id']]) ? $conversations[$message['conversation_id']] : null);
