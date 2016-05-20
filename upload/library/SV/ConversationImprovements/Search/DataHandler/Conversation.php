@@ -139,7 +139,17 @@ class SV_ConversationImprovements_Search_DataHandler_Conversation extends XenFor
     public function getDataForResults(array $ids, array $viewingUser, array $resultsGrouped)
     {
         if (!($this->enabled)) return array();
-        return $this->_getConversationModel()->getConversationsForUserByIdsWithMessage($viewingUser['user_id'], array_unique($ids));
+        $ids = array_unique($ids);
+        $conversationModel = $this->_getConversationModel();
+        $conversations = $conversationModel->getConversationsForUserByIdsWithMessage($viewingUser['user_id'], $ids);
+        // unflatten conversation recipients in a single query
+        $flattenedRecipients = $conversationModel->getConversationsRecipients($ids);
+        foreach ($flattenedRecipients AS &$recipient)
+        {
+            $conversations[$recipient['conversation_id']]['all_recipients'][$recipient['user_id']] = $recipient;
+        }
+
+        return $conversations;
     }
 
     /**
