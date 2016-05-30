@@ -3,6 +3,20 @@
 class SV_ConversationImprovements_Installer
 {
     const AddonNameSpace = 'SV_ConversationImprovements_';
+    public static $extraMappings = array(
+            'conversation' => array(
+                "properties" => array(
+                    "recipients" => array("type" => "long"),
+                    "conversation" => array("type" => "long"),
+                )
+            ),
+            'conversation_message' => array(
+                "properties" => array(
+                    "recipients" => array("type" => "long"),
+                    "conversation" => array("type" => "long"),
+                )
+            )
+        );
 
     public static function install($existingAddOn, $addOnData)
     {
@@ -74,8 +88,6 @@ class SV_ConversationImprovements_Installer
                 ('conversation_message', 'search_handler_class', '".self::AddonNameSpace."Search_DataHandler_ConversationMessage')
         ");
 
-        XenForo_Model::create('XenForo_Model_ContentType')->rebuildContentTypeCache();
-
         $requireIndexing = array();
 
         if ($version == 0)
@@ -85,20 +97,11 @@ class SV_ConversationImprovements_Installer
         }
 
         // if Elastic Search is installed, determine if we need to push optimized mappings for the search types
-        SV_Utils_Install::updateXenEsMapping($requireIndexing, array(
-            'conversation' => array(
-                "properties" => array(
-                    "recipients" => array("type" => "long"),
-                    "conversation" => array("type" => "long"),
-                )
-            ),
-            'conversation_message' => array(
-                "properties" => array(
-                    "recipients" => array("type" => "long"),
-                    "conversation" => array("type" => "long"),
-                )
-            )
-        ));
+        SV_Utils_Install::updateXenEsMapping($requireIndexing, self::$extraMappings);
+        
+        
+        XenForo_Model::create('XenForo_Model_ContentType')->rebuildContentTypeCache();
+        XenForo_Application::defer('Permission', array(), 'Permission', true);
 
         return true;
     }
@@ -139,6 +142,7 @@ class SV_ConversationImprovements_Installer
         ");
 
         XenForo_Model::create('XenForo_Model_ContentType')->rebuildContentTypeCache();
+        XenForo_Application::defer('Permission', array(), 'Permission', true);
         return true;
     }
 }
