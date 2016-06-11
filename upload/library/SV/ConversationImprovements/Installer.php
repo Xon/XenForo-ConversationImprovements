@@ -3,20 +3,6 @@
 class SV_ConversationImprovements_Installer
 {
     const AddonNameSpace = 'SV_ConversationImprovements_';
-    public static $extraMappings = array(
-            'conversation' => array(
-                "properties" => array(
-                    "recipients" => array("type" => "long"),
-                    "conversation" => array("type" => "long"),
-                )
-            ),
-            'conversation_message' => array(
-                "properties" => array(
-                    "recipients" => array("type" => "long"),
-                    "conversation" => array("type" => "long"),
-                )
-            )
-        );
 
     public static function install($existingAddOn, $addOnData)
     {
@@ -97,7 +83,8 @@ class SV_ConversationImprovements_Installer
         }
 
         // if Elastic Search is installed, determine if we need to push optimized mappings for the search types
-        SV_Utils_Install::updateXenEsMapping($requireIndexing, self::$extraMappings);
+        // requires overriding XenES_Model_Elasticsearch
+        SV_Utils_Deferred_Search::SchemaUpdates($requireIndexing);
         
         
         XenForo_Model::create('XenForo_Model_ContentType')->rebuildContentTypeCache();
