@@ -200,7 +200,7 @@ class SV_ConversationImprovements_Search_DataHandler_ConversationMessage extends
                                               ? $recipients[$conversation_id]
                                               : array();
         }
-        
+
         foreach ($messages AS $messageId => &$message)
         {
             $message['conversation'] = (isset($conversations[$message['conversation_id']]) ? $conversations[$message['conversation_id']] : null);
@@ -324,14 +324,19 @@ class SV_ConversationImprovements_Search_DataHandler_ConversationMessage extends
             $constraints['recipients'] = array_keys($users);
         }
 
-        $this->EnforceUserAccess($constraints);
-
         return $constraints;
     }
 
-    protected function EnforceUserAccess(array &$constraints)
+    public function filterConstraintsFromGeneral(XenForo_Search_SourceHandler_Abstract $sourceHandler, array $constraints, array $constraintsGeneral, array $viewingUser = null)
     {
+        return $constraints;
+    }
+
+    public function filterConstraints(XenForo_Search_SourceHandler_Abstract $sourceHandler, array $constraints)
+    {
+        $constraints = parent::filterConstraints($sourceHandler, $constraints);
         $constraints['require_recipient'] = XenForo_Visitor::getUserId();
+        return $constraints;
     }
 
     /**

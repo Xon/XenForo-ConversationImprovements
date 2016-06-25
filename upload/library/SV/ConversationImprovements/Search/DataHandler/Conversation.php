@@ -218,6 +218,66 @@ class SV_ConversationImprovements_Search_DataHandler_Conversation extends XenFor
         return array('conversation');
     }
 
+    public function filterConstraints(XenForo_Search_SourceHandler_Abstract $sourceHandler, array $constraints)
+    {
+        $constraints = parent::filterConstraints($sourceHandler, $constraints);
+        $constraints['require_recipient'] = XenForo_Visitor::getUserId();
+        return $constraints;
+    }
+
+    public function processConstraint(XenForo_Search_SourceHandler_Abstract $sourceHandler, $constraint, $constraintInfo, array $constraints)
+    {
+        if (!($this->enabled)) return array();
+        switch ($constraint)
+        {
+            case 'reply_count':
+                $replyCount = intval($constraintInfo);
+                if ($replyCount > 0)
+                {
+                    return array(
+                        'query' => array('conversation', 'reply_count', '>=', $replyCount)
+                    );
+                }
+                break;
+
+            case 'prefix':
+                if ($constraintInfo)
+                {
+                    return array(
+                        'metadata' => array('prefix', preg_split('/\D+/', strval($constraintInfo))),
+                    );
+                }
+                break;
+
+            case 'conversation':
+                $conversationId = intval($constraintInfo);
+                if ($conversationId > 0)
+                {
+                    return array(
+                        'metadata' => array('conversation', $conversationId)
+                    );
+                }
+                break;
+            case 'require_recipient':
+                if ($constraintInfo)
+                {
+                    return array(
+                       'metadata' => array('recipients', $constraintInfo)
+                    );
+                }
+            case 'recipients':
+                if ($constraintInfo)
+                {
+                    return array(
+                       'metadata' => array('recipients', $constraintInfo)
+                    );
+                }
+                break;
+        }
+
+        return false;
+    }
+
     protected function _getConversationModel()
     {
         if ($this->_conversationModel === null)
