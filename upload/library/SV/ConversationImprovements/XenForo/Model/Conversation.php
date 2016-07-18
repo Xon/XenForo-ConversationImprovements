@@ -50,7 +50,7 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
         return $joinOptions;
     }
 
-    public function getConversationMessagesByIds($messageIds, array $fetchOptions = array())
+    public function getConversationMessagesByIds(array $messageIds, array $fetchOptions = array())
     {
         if (empty($messageIds))
         {
