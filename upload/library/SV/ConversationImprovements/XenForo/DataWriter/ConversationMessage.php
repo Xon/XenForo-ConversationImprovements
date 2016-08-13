@@ -44,7 +44,7 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMessage extends
         return $defaultOptions;
     }
 
-    protected function _PreSave()
+    protected function _preSave()
     {
         if ($this->isUpdate() && $this->isChanged('message'))
         {
@@ -70,7 +70,7 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMessage extends
         {
             $this->set('last_edit_user_id', 0);
         }
-        return parent::_PreSave();
+        return parent::_preSave();
     }
 
     protected function _postSave()

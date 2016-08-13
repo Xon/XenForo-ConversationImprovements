@@ -25,7 +25,7 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
         return $defaultOptions;
     }
 
-    protected function _PreSave()
+    protected function _preSave()
     {
         if ($this->isUpdate() && $this->isChanged('title'))
         {
@@ -51,7 +51,7 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
         {
             $this->set('conversation_last_edit_user_id', 0);
         }
-        parent::_PreSave();
+        parent::_preSave();
         if ($this->isInsert() && !$this->_newRecipients && XenForo_Application::getOptions()->sv_conversation_with_no_one)
         {
             if (!empty($this->_errors['recipients']) && 
