@@ -110,6 +110,10 @@ class SV_ConversationImprovements_Installer
         // if XF ever supports likes on conversations this will break it:
         SV_Utils_Install::dropColumn('xf_conversation_message', '_likes');        
         SV_Utils_Install::dropColumn('xf_conversation_message', 'like_users');
+        $db->query("
+            DELETE FROM xf_permission_entry
+            where permission_group_id = 'conversation' and permission_id in ('like')
+        ");
         // if XF ever supports History on conversations this will break it:
         SV_Utils_Install::dropColumn('xf_conversation_message', 'edit_count');
         SV_Utils_Install::dropColumn('xf_conversation_message', 'last_edit_date');
