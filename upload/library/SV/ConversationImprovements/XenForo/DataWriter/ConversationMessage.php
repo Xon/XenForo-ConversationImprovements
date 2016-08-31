@@ -97,6 +97,7 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMessage extends
         parent::delete();
         // update search index outside the transaction
         $this->_deleteFromSearchIndex();
+        $this->getModelFromCache('XenForo_Model_Alert')->deleteAlerts('conversation_message', $this->get('message_id'));
     }
 
     protected function _insertEditHistory()
