@@ -39,8 +39,7 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMessage extends
     {
         $defaultOptions = parent::_getDefaultOptions();
         $defaultOptions[self::OPTION_INDEX_FOR_SEARCH] = true;
-        $options = XenForo_Application::get('options');
-        $defaults[self::OPTION_LOG_EDIT] = $options->editHistory['enabled'];
+        $defaultOptions[self::OPTION_LOG_EDIT] = XenForo_Application::getOptions()->editHistory['enabled'];
         return $defaultOptions;
     }
 
@@ -75,7 +74,7 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMessage extends
 
     protected function _postSave()
     {
-        if ($this->isUpdate() && $this->isChanged('message'))
+        if ($this->isUpdate() && $this->isChanged('message') && $this->getOption(self::OPTION_LOG_EDIT))
         {
             $this->_insertEditHistory();
         }

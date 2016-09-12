@@ -13,8 +13,6 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
         $fields["xf_conversation_master"]['conversation_last_edit_date'] = array('type' => self::TYPE_UINT, 'default' => 0);
         $fields["xf_conversation_master"]['conversation_last_edit_user_id'] = array('type' => self::TYPE_UINT, 'default' => 0);
         $fields["xf_conversation_master"]['conversation_edit_count'] = array('type' => self::TYPE_UINT_FORCED, 'default' => 0);
-        $options = XenForo_Application::get('options');
-        $defaults[self::OPTION_LOG_EDIT] = $options->editHistory['enabled'];
         return $fields;
     }
 
@@ -22,6 +20,7 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
     {
         $defaultOptions = parent::_getDefaultOptions();
         $defaultOptions[self::OPTION_INDEX_FOR_SEARCH] = true;
+        $defaultOptions[self::OPTION_LOG_EDIT] = XenForo_Application::getOptions()->editHistory['enabled'];
         return $defaultOptions;
     }
 
@@ -65,7 +64,7 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
 
     protected function _postSave()
     {
-        if ($this->isUpdate() && $this->isChanged('title'))
+        if ($this->isUpdate() && $this->isChanged('title') && $this->getOption(self::OPTION_LOG_EDIT))
         {
             $this->_insertEditHistory();
         }
