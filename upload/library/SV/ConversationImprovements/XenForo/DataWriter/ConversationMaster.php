@@ -20,7 +20,8 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
     {
         $defaultOptions = parent::_getDefaultOptions();
         $defaultOptions[self::OPTION_INDEX_FOR_SEARCH] = true;
-        $defaultOptions[self::OPTION_LOG_EDIT] = XenForo_Application::getOptions()->editHistory['enabled'];
+        $editHistory = XenForo_Application::getOptions()->editHistory;
+        $defaultOptions[self::OPTION_LOG_EDIT] = empty($editHistory['enabled']) ? false : $editHistory['enabled'];
         return $defaultOptions;
     }
 
