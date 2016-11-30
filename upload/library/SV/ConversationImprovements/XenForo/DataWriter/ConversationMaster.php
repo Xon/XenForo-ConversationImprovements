@@ -111,7 +111,7 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
 
     protected function _insertOrUpdateSearchIndex()
     {
-        $dataHandler = $this->_getSearchDataHandler();
+        $dataHandler = $this->sv_getSearchDataHandler();
         if (!$dataHandler)
         {
             return;
@@ -123,7 +123,7 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
             $dataHandler->insertIntoIndex($indexer, $this->getMergedData(), null);
             if ($this->_firstMessageDw)
             {
-                $dataHandler = $this->_getSearchDataHandlerForMessage();
+                $dataHandler = $this->sv_getSearchDataHandlerForMessage();
                 $dataHandler->insertIntoIndex($indexer, $this->_firstMessageDw->getMergedData(), $this->getMergedData());
             }
         }
@@ -145,7 +145,7 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
 
     protected function _deleteFromSearchIndex()
     {
-        $dataHandler = $this->_getSearchDataHandler();
+        $dataHandler = $this->sv_getSearchDataHandler();
         if (!$dataHandler)
         {
             return;
@@ -154,7 +154,7 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
         $indexer = new XenForo_Search_Indexer();
         $dataHandler->deleteFromIndex($indexer, $this->getMergedData());
 
-        $messageHandler = $this->_getSearchDataHandlerForMessage();
+        $messageHandler = $this->sv_getSearchDataHandlerForMessage();
         if ($messageHandler)
         {
             $messageHandler->deleteFromIndex($indexer, $this->_getDiscussionMessageIds());
@@ -171,14 +171,21 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
         ", $this->get('conversation_id'));
     }
 
-    protected function _getSearchDataHandler()
+    protected function sv_getSearchDataHandler()
     {
-        return XenForo_Search_DataHandler_Abstract::create('SV_ConversationImprovements_Search_DataHandler_Conversation');
+        $dataHandler = $this->_getSearchnModel()->getSearchDataHandler('conversation');
+        return ($dataHandler instanceof SV_ConversationImprovements_XenForo_Model_Conversation) ? $dataHandler : null;
     }
 
-    public function _getSearchDataHandlerForMessage()
+    public function sv_getSearchDataHandlerForMessage()
     {
-        return XenForo_Search_DataHandler_Abstract::create('SV_ConversationImprovements_Search_DataHandler_ConversationMessage');
+        $dataHandler = $this->_getSearchnModel()->getSearchDataHandler('conversation_message');
+        return ($dataHandler instanceof SV_ConversationImprovements_XenForo_Model_ConversationMessage) ? $dataHandler : null;
+    }
+
+    protected function _getSearchnModel()
+    {
+        return $this->getModelFromCache('XenForo_Model_Search');
     }
 
     protected function _getConversationModel()

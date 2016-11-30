@@ -114,7 +114,7 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMessage extends
 
     protected function _insertIntoSearchIndex()
     {
-        $dataHandler = $this->_getSearchDataHandler();
+        $dataHandler = $this->sv_getSearchDataHandler();
         if (!$dataHandler)
         {
             return;
@@ -127,7 +127,7 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMessage extends
 
     protected function _deleteFromSearchIndex()
     {
-        $dataHandler = $this->_getSearchDataHandler();
+        $dataHandler = $this->sv_getSearchDataHandler();
         if (!$dataHandler)
         {
             return;
@@ -137,9 +137,15 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMessage extends
         $dataHandler->deleteFromIndex($indexer, $this->getMergedData());
     }
 
-    public function _getSearchDataHandler()
+    public function sv_getSearchDataHandler()
     {
-        return XenForo_Search_DataHandler_Abstract::create('SV_ConversationImprovements_Search_DataHandler_ConversationMessage');
+        $dataHandler = $this->_getSearchnModel()->getSearchDataHandler('conversation_message');
+        return ($dataHandler instanceof SV_ConversationImprovements_XenForo_Model_ConversationMessage) ? $dataHandler : null;
+    }
+
+    protected function _getSearchnModel()
+    {
+        return $this->getModelFromCache('XenForo_Model_Search');
     }
 
     protected function _getConversationModel()
