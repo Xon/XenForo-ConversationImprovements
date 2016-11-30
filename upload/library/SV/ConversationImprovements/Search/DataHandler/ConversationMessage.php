@@ -13,6 +13,13 @@ class SV_ConversationImprovements_Search_DataHandler_ConversationMessage extends
         $this->enabled = class_exists('XFCP_SV_ConversationImprovements_XenForo_Model_Conversation', false);
     }
 
+    public function getCustomMapping(array $mapping = array())
+    {
+        $mapping['properties']['recipients'] = array("type" => "long");
+        $mapping['properties']['conversation'] = array("type" => "long");
+        return $mapping;
+    }
+
     /**
      * Inserts into (or replaces a record) in the index.
      *
