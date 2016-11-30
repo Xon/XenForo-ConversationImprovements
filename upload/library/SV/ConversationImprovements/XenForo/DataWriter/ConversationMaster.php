@@ -173,17 +173,17 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
 
     protected function sv_getSearchDataHandler()
     {
-        $dataHandler = $this->_getSearchnModel()->getSearchDataHandler('conversation');
+        $dataHandler = $this->_getSearchModel()->getSearchDataHandler('conversation');
         return ($dataHandler instanceof SV_ConversationImprovements_XenForo_Model_Conversation) ? $dataHandler : null;
     }
 
     public function sv_getSearchDataHandlerForMessage()
     {
-        $dataHandler = $this->_getSearchnModel()->getSearchDataHandler('conversation_message');
+        $dataHandler = $this->_getSearchModel()->getSearchDataHandler('conversation_message');
         return ($dataHandler instanceof SV_ConversationImprovements_XenForo_Model_ConversationMessage) ? $dataHandler : null;
     }
 
-    protected function _getSearchnModel()
+    protected function _getSearchModel()
     {
         return $this->getModelFromCache('XenForo_Model_Search');
     }

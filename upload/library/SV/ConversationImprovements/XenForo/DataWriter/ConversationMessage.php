@@ -139,11 +139,11 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMessage extends
 
     public function sv_getSearchDataHandler()
     {
-        $dataHandler = $this->_getSearchnModel()->getSearchDataHandler('conversation_message');
+        $dataHandler = $this->_getSearchModel()->getSearchDataHandler('conversation_message');
         return ($dataHandler instanceof SV_ConversationImprovements_XenForo_Model_ConversationMessage) ? $dataHandler : null;
     }
 
-    protected function _getSearchnModel()
+    protected function _getSearchModel()
     {
         return $this->getModelFromCache('XenForo_Model_Search');
     }
