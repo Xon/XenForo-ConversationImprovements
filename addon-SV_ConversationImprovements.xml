@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="SV_ConvImprovements" title="Conversation Improvements" version_string="1.3.3" version_id="1030300" url="https://xenforo.com/community/resources/conversation-improvements-by-xon.4518/" install_callback_class="SV_ConversationImprovements_Installer" install_callback_method="install" uninstall_callback_class="SV_ConversationImprovements_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="SV_ConvImprovements" title="Conversation Improvements" version_string="1.3.4" version_id="1030400" url="https://xenforo.com/community/resources/conversation-improvements-by-xon.4518/" install_callback_class="SV_ConversationImprovements_Installer" install_callback_method="install" uninstall_callback_class="SV_ConversationImprovements_Installer" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -405,9 +405,9 @@ $0]]></replace>
       <replace><![CDATA[$0
 <xen:set var="$likesUrl">{xen:link conversations/likes, $conversation, 'message_id={$message.message_id}'}</xen:set>]]></replace>
     </modification>
-    <modification template="conversation_message" modification_key="SV_ConversationImprovements_conversation_message_3" description="Inject History Anchor" execution_order="30" enabled="1" action="str_replace">
-      <find><![CDATA[messageMeta]]></find>
-      <replace><![CDATA[$0 ToggleTriggerAnchor]]></replace>
+    <modification template="conversation_message" modification_key="SV_ConversationImprovements_conversation_message_3" description="Inject History Anchor" execution_order="30" enabled="1" action="preg_replace">
+      <find><![CDATA[#(\$messageAfterTemplate.*?<div class="messageMeta[^"]*?)(">)#si]]></find>
+      <replace><![CDATA[$1 ToggleTriggerAnchor $2]]></replace>
     </modification>
     <modification template="message" modification_key="SV_ConversationImprovements_message_2" description="Workaround for buggy Post Ratings" execution_order="15" enabled="1" action="str_replace">
       <find><![CDATA[<xen:hook name="dark_postrating_likes_bar" params="{xen:array 'post={$message}','message_id={$messageId}'}" />]]></find>
