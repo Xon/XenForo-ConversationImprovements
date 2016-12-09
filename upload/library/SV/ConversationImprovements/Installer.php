@@ -76,7 +76,7 @@ class SV_ConversationImprovements_Installer
 
         $requireIndexing = array();
 
-        if ($version == 0)
+        if ($version == 0 || ($version > 1030200 && $version < 1030400))
         {
             $requireIndexing['conversation'] = true;
             $requireIndexing['conversation_message'] = true;
