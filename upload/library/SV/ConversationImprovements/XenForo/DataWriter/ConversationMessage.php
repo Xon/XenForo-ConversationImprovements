@@ -140,7 +140,7 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMessage extends
     public function sv_getSearchDataHandler()
     {
         $dataHandler = $this->_getSearchModel()->getSearchDataHandler('conversation_message');
-        return ($dataHandler instanceof SV_ConversationImprovements_XenForo_Model_ConversationMessage) ? $dataHandler : null;
+        return ($dataHandler instanceof SV_ConversationImprovements_Search_DataHandler_ConversationMessage) ? $dataHandler : null;
     }
 
     protected function _getSearchModel()

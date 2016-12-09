@@ -54,7 +54,7 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
         parent::_preSave();
         if ($this->isInsert() && !$this->_newRecipients && XenForo_Application::getOptions()->sv_conversation_with_no_one)
         {
-            if (!empty($this->_errors['recipients']) && 
+            if (!empty($this->_errors['recipients']) &&
                 $this->_errors['recipients'] instanceof XenForo_Phrase &&
                 $this->_errors['recipients']->getPhraseName() == 'please_enter_at_least_one_valid_recipient')
             {
@@ -174,13 +174,13 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
     protected function sv_getSearchDataHandler()
     {
         $dataHandler = $this->_getSearchModel()->getSearchDataHandler('conversation');
-        return ($dataHandler instanceof SV_ConversationImprovements_XenForo_Model_Conversation) ? $dataHandler : null;
+        return ($dataHandler instanceof SV_ConversationImprovements_Search_DataHandler_Conversation) ? $dataHandler : null;
     }
 
     public function sv_getSearchDataHandlerForMessage()
     {
         $dataHandler = $this->_getSearchModel()->getSearchDataHandler('conversation_message');
-        return ($dataHandler instanceof SV_ConversationImprovements_XenForo_Model_ConversationMessage) ? $dataHandler : null;
+        return ($dataHandler instanceof SV_ConversationImprovements_Search_DataHandler_ConversationMessage) ? $dataHandler : null;
     }
 
     protected function _getSearchModel()
