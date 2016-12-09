@@ -126,6 +126,7 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
                 (conversation_master.first_message_id = first_conversation_message.message_id)
             WHERE conversation_user.owner_user_id = ?
                 AND conversation_user.conversation_id IN (' . $this->_getDb()->quote($conversationIds) . ')
+                AND conversation_recipient.recipient_state = \'active\'
             ORDER BY conversation_user.last_message_date DESC
         ', 'conversation_id', $userId);
     }
