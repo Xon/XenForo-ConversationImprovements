@@ -22,7 +22,7 @@ class SV_ConversationImprovements_EditHistoryHandler_Conversation extends XenFor
 
         $conversationModel = $this->_getConversationModel();
 
-        $conversations = $conversationModel->getConversationsByIds($contentId);
+        $conversations = $conversationModel->sv_getConversationsByIds($contentId);
         $conversation = reset($conversations);
         return $conversation;
     }

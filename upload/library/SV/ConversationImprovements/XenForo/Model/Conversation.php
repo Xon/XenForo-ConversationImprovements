@@ -86,7 +86,7 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
         ', $limit), $start);
     }
 
-    public function getConversationsByIds($conversationIds)
+    public function sv_getConversationsByIds($conversationIds)
     {
         if (empty($conversationIds))
         {

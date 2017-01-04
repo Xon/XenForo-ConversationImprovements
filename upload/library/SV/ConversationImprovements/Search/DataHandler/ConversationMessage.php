@@ -135,7 +135,7 @@ class SV_ConversationImprovements_Search_DataHandler_ConversationMessage extends
             $conversationIds[] = $message['conversation_id'];
         }
 
-        $conversations = $conversationModel->getConversationsByIds(array_unique($conversationIds));
+        $conversations = $conversationModel->sv_getConversationsByIds(array_unique($conversationIds));
         $recipients = array();
         $flattenedRecipients = $conversationModel->getConversationsRecipients($conversationIds);
         foreach ($flattenedRecipients AS &$recipient)

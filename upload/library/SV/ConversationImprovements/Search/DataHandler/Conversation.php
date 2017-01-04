@@ -110,7 +110,7 @@ class SV_ConversationImprovements_Search_DataHandler_Conversation extends XenFor
     {
         if (!($this->enabled)) return false;
         $conversationModel = $this->_getConversationModel();
-        $conversations = $conversationModel->getConversationsByIds($contentIds);
+        $conversations = $conversationModel->sv_getConversationsByIds($contentIds);
         $recipients = array();
         $flattenedRecipients = $conversationModel->getConversationsRecipients($contentIds);
         foreach ($flattenedRecipients AS &$recipient)

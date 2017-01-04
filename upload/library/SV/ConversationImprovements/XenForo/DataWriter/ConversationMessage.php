@@ -12,7 +12,7 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMessage extends
         if (!$conversation = $this->getExtraData(self::DATA_CONVERSATION))
         {
             $conversation_id = $this->get('conversation_id');
-            $conversations = $this->_getConversationModel()->getConversationsByIds($conversation_id);
+            $conversations = $this->_getConversationModel()->sv_getConversationsByIds($conversation_id);
             $conversation = isset($conversations[$conversation_id]) ? $conversations[$conversation_id] : null;
 
             $this->setExtraData(self::DATA_CONVERSATION, $conversation ? $conversation : array());
