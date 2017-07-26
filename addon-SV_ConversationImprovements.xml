@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="SV_ConvImprovements" title="Conversation Improvements" version_string="1.3.6" version_id="1030600" url="https://xenforo.com/community/resources/conversation-improvements-by-xon.4518/" install_callback_class="SV_ConversationImprovements_Installer" install_callback_method="install" uninstall_callback_class="SV_ConversationImprovements_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="SV_ConvImprovements" title="Conversation Improvements" version_string="1.3.7" version_id="1030700" url="https://xenforo.com/community/resources/conversation-improvements-by-xon.4518/" install_callback_class="SV_ConversationImprovements_Installer" install_callback_method="install" uninstall_callback_class="SV_ConversationImprovements_Installer" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -102,7 +102,12 @@
 <p class="snippet">{xen:helper snippet, $content.message, $xenOptions.newsFeedMessageSnippetLength, {xen:array 'stripQuote=1'}}</p>
 
 <xen:include template="news_feed_attached_images" />]]></template>
-    <template title="search_bar_conversations_only" version_id="10000" version_string="1.0.0"><![CDATA[<label title="{xen:phrase search_conversations_only}"><input type="checkbox" name="type" value="conversation_message" id="search_bar_conversations" class="Disabler AutoChecker" checked="checked" data-uncheck="#search_bar_conversation" /> {xen:phrase search_conversations_only}</label>]]></template>
+    <template title="search_bar_conversations_only" version_id="1030700" version_string="1.3.7"><![CDATA[<label title="{xen:phrase search_conversations_only}"><input type="checkbox" name="type[conversation_message][type]" value="conversation_message" id="search_bar_conversations" class="Disabler AutoChecker" checked="checked" data-uncheck="#search_bar_conversation" /> {xen:phrase search_conversations_only}</label>
+	<ul id="search_bar_conversations_Disabler">
+		<li><label><input type="checkbox" name="type[conversation_message][group_discussion]" value="1"
+			id="search_bar_group_discussion" class="AutoChecker"
+			data-uncheck="#search_bar_conversation" /> {xen:phrase display_results_as_conversations}</label></li>
+	</ul>]]></template>
     <template title="search_bar_conversation_only" version_id="10000" version_string="1.0.0"><![CDATA[<label title="{xen:phrase search_this_conversation_only}"><input type="checkbox" name="type[conversation_message][conversation_id]" value="{$conversation.conversation_id}" id="search_bar_conversation" class="Disabler AutoChecker" data-uncheck="#search_bar_title_only, #search_bar_conversations" /> {xen:phrase search_this_conversation_only}</label>]]></template>
     <template title="search_form_conversation_message" version_id="10000" version_string="1.0.0"><![CDATA[<xen:title>{xen:phrase search_conversations}</xen:title>
 
