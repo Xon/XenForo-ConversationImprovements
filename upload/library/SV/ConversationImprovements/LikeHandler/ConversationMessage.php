@@ -21,7 +21,7 @@ class SV_ConversationImprovements_LikeHandler_ConversationMessage extends XenFor
             $dw->setOption(XenForo_DataWriter_ConversationMessage::OPTION_CHECK_SENDER_RECIPIENT, false);
             $dw->setOption(XenForo_DataWriter_ConversationMessage::OPTION_SET_IP_ADDRESS, false);
             $dw->set('_likes', $dw->get('_likes') + $adjustAmount);
-            $dw->set('like_users', $latestLikes);
+            $dw->set('_like_users', $latestLikes);
             $dw->save();
         }
     }

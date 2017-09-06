@@ -20,11 +20,15 @@ class SV_ConversationImprovements_Installer
         {
             SV_Utils_Install::addColumn('xf_conversation_message', '_likes', 'INT UNSIGNED NOT NULL DEFAULT 0');
         }
+        if ($version < 1030800)
+        {
+            SV_Utils_Install::renameColumn('xf_conversation_message', 'like_users', '_like_users', 'INT UNSIGNED NOT NULL DEFAULT 0');
+        }
         if ($version && $version <= 1010100)
         {
-            SV_Utils_Install::modifyColumn('xf_conversation_message', 'like_users', 'BLOB', 'BLOB');
+            SV_Utils_Install::modifyColumn('xf_conversation_message', '_like_users', 'BLOB', 'BLOB');
         }
-        SV_Utils_Install::addColumn('xf_conversation_message', 'like_users', 'BLOB');
+        SV_Utils_Install::addColumn('xf_conversation_message', '_like_users', 'BLOB');
         SV_Utils_Install::addColumn('xf_conversation_message', 'edit_count', 'int not null default 0');
         SV_Utils_Install::addColumn('xf_conversation_message', 'last_edit_date', 'int not null default 0');
         SV_Utils_Install::addColumn('xf_conversation_message', 'last_edit_user_id', 'int not null default 0');
@@ -107,9 +111,8 @@ class SV_ConversationImprovements_Installer
             where permission_group_id = 'conversation' and permission_id in ('replyLimit', 'canReply', 'sv_manageConversation')
         ");
 
-        // if XF ever supports likes on conversations this will break it:
         SV_Utils_Install::dropColumn('xf_conversation_message', '_likes');        
-        SV_Utils_Install::dropColumn('xf_conversation_message', 'like_users');
+        SV_Utils_Install::dropColumn('xf_conversation_message', '_like_users');
         $db->query("
             DELETE FROM xf_permission_entry
             where permission_group_id = 'conversation' and permission_id in ('like')

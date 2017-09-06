@@ -293,7 +293,7 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
             if (!empty($message['_likes']))
             {
                 $message['likes'] = $message['_likes'];
-                $message['likeUsers'] = @unserialize($message['like_users']);
+                $message['likeUsers'] = @unserialize($message['_like_users']);
                 if (empty($message['likeUsers']))
                 {
                     $message['likeUsers'] = array();
@@ -322,7 +322,7 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
                 AND like_user_id = ?
             ) AS temp
             INNER JOIN xf_conversation_message AS message ON (message.message_id = temp.content_id)
-            SET like_users = REPLACE(like_users, ' .
+            SET _like_users = REPLACE(_like_users, ' .
             $db->quote('i:' . $oldUserId . ';s:8:"username";s:' . strlen($oldUsername) . ':"' . $oldUsername . '";') . ', ' .
             $db->quote('i:' . $newUserId . ';s:8:"username";s:' . strlen($newUsername) . ':"' . $newUsername . '";') . ')
         ', $newUserId);
