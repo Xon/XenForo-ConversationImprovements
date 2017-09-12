@@ -22,7 +22,7 @@ class SV_ConversationImprovements_Installer
         }
         if ($version < 1030800)
         {
-            SV_Utils_Install::renameColumn('xf_conversation_message', 'like_users', '_like_users', 'INT UNSIGNED NOT NULL DEFAULT 0');
+            SV_Utils_Install::renameColumn('xf_conversation_message', 'like_users', '_like_users', 'BLOB');
         }
         if ($version && $version <= 1010100)
         {
