@@ -3,7 +3,9 @@
 class SV_ConversationImprovements_EditHistoryHandler_ConversationMessage extends XenForo_EditHistoryHandler_Abstract
 {
     protected $_prefix = 'conversations/message';
+    /** @var bool */
     protected $enabled = false;
+    /** @var SV_ConversationImprovements_XenForo_Model_Conversation|null */
     protected $_conversationModel = null;
 
     public function __construct()
@@ -17,14 +19,16 @@ class SV_ConversationImprovements_EditHistoryHandler_ConversationMessage extends
     {
         if (!$this->enabled)
         {
-            return array();
+            return [];
         }
 
         $conversationModel = $this->_getConversationModel();
 
-        return $conversationModel->getConversationMessageById($contentId, array(
+        return $conversationModel->getConversationMessageById(
+            $contentId, [
             'includeConversation' => true
-        ));
+        ]
+        );
     }
 
     protected function _canViewHistoryAndContent(array $content, array $viewingUser)
@@ -55,16 +59,18 @@ class SV_ConversationImprovements_EditHistoryHandler_ConversationMessage extends
 
     public function getBreadcrumbs(array $content)
     {
-        return array(
-            array(
-                'href' => XenForo_Link::buildPublicLink('full:conversations'),
+        return [
+            [
+                'href'  => XenForo_Link::buildPublicLink('full:conversations'),
                 'value' => new XenForo_Phrase('conversations')
-            ),
-            array(
-                'href' => XenForo_Link::buildPublicLink('full:conversations/message', $content, array('message_id' => $content['message_id'])),
+            ],
+            [
+                'href'  => XenForo_Link::buildPublicLink(
+                    'full:conversations/message', $content, ['message_id' => $content['message_id']]
+                ),
                 'value' => $content['title']
-            )
-        );
+            ]
+        ];
     }
 
     public function getNavigationTab()
@@ -106,6 +112,7 @@ class SV_ConversationImprovements_EditHistoryHandler_ConversationMessage extends
         {
             $this->_conversationModel = XenForo_Model::create('XenForo_Model_Conversation');
         }
+
         return $this->_conversationModel;
     }
 }

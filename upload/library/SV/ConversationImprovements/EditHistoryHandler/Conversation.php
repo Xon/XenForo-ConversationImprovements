@@ -3,7 +3,9 @@
 class SV_ConversationImprovements_EditHistoryHandler_Conversation extends XenForo_EditHistoryHandler_Abstract
 {
     protected $_prefix = 'conversations';
+    /** @var bool */
     protected $enabled = false;
+    /** @var SV_ConversationImprovements_XenForo_Model_Conversation|null */
     protected $_conversationModel = null;
 
     public function __construct()
@@ -17,13 +19,14 @@ class SV_ConversationImprovements_EditHistoryHandler_Conversation extends XenFor
     {
         if (!$this->enabled)
         {
-            return array();
+            return [];
         }
 
         $conversationModel = $this->_getConversationModel();
 
         $conversations = $conversationModel->sv_getConversationsByIds($contentId);
         $conversation = reset($conversations);
+
         return $conversation;
     }
 
@@ -55,16 +58,16 @@ class SV_ConversationImprovements_EditHistoryHandler_Conversation extends XenFor
 
     public function getBreadcrumbs(array $content)
     {
-        return array(
-            array(
-                'href' => XenForo_Link::buildPublicLink('full:conversations'),
+        return [
+            [
+                'href'  => XenForo_Link::buildPublicLink('full:conversations'),
                 'value' => new XenForo_Phrase('conversations')
-            ),
-            array(
-                'href' => XenForo_Link::buildPublicLink('full:conversations', $content),
+            ],
+            [
+                'href'  => XenForo_Link::buildPublicLink('full:conversations', $content),
                 'value' => $content['title']
-            )
-        );
+            ]
+        ];
     }
 
     public function getNavigationTab()
@@ -106,6 +109,7 @@ class SV_ConversationImprovements_EditHistoryHandler_Conversation extends XenFor
         {
             $this->_conversationModel = XenForo_Model::create('XenForo_Model_Conversation');
         }
+
         return $this->_conversationModel;
     }
 }

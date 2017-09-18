@@ -2,7 +2,9 @@
 
 class SV_ConversationImprovements_Search_DataHandler_Conversation extends XenForo_Search_DataHandler_Abstract
 {
+    /** @var bool */
     protected $enabled = false;
+    /** @var SV_ConversationImprovements_XenForo_Model_Conversation|null */
     protected $_conversationModel = null;
 
     public function __construct()
@@ -12,29 +14,22 @@ class SV_ConversationImprovements_Search_DataHandler_Conversation extends XenFor
         $this->enabled = class_exists('XFCP_SV_ConversationImprovements_XenForo_Model_Conversation', false);
     }
 
-    public function getCustomMapping(array $mapping = array())
+    public function getCustomMapping(array $mapping = [])
     {
-        $mapping['properties']['recipients'] = array("type" => "long");
-        $mapping['properties']['conversation'] = array("type" => "long");
+        $mapping['properties']['recipients'] = ["type" => "long"];
+        $mapping['properties']['conversation'] = ["type" => "long"];
+
         return $mapping;
     }
 
-    /**
-     * Inserts into (or replaces a record) in the index.
-     *
-     * @see XenForo_Search_DataHandler_Abstract::_insertIntoIndex()
-     */
     protected function _insertIntoIndex(XenForo_Search_Indexer $indexer, array $data, array $parentData = null)
     {
-        if (!($this->enabled)) return;
-        //$threadModel = $this->_getThreadModel();
+        if (!($this->enabled))
+        {
+            return;
+        }
 
-        //if ($threadModel->isRedirect($data) || !$threadModel->isVisible($data))
-        //{
-        //  return;
-        //}
-
-        $metadata = array();
+        $metadata = [];
         $metadata['conversation'] = $data['conversation_id'];
         if (!empty($data['prefix_id']))
         {
@@ -43,7 +38,9 @@ class SV_ConversationImprovements_Search_DataHandler_Conversation extends XenFor
 
         if (!isset($data['all_recipients']))
         {
-            $data['all_recipients'] = $this->_getConversationModel()->getConversationRecipientsForSearch($data['conversation_id']);
+            $data['all_recipients'] = $this->_getConversationModel()->getConversationRecipientsForSearch(
+                $data['conversation_id']
+            );
         }
         $metadata['recipients'] = array_keys($data['all_recipients']);
 
@@ -54,26 +51,22 @@ class SV_ConversationImprovements_Search_DataHandler_Conversation extends XenFor
         );
     }
 
-    /**
-     * Updates a record in the index.
-     *
-     * @see XenForo_Search_DataHandler_Abstract::_updateIndex()
-     */
     protected function _updateIndex(XenForo_Search_Indexer $indexer, array $data, array $fieldUpdates)
     {
-        if (!($this->enabled)) return;
+        if (!($this->enabled))
+        {
+            return;
+        }
         $indexer->updateIndex('conversation', $data['conversation_id'], $fieldUpdates);
     }
 
-    /**
-     * Deletes one or more records from the index.
-     *
-     * @see XenForo_Search_DataHandler_Abstract::_deleteFromIndex()
-     */
     protected function _deleteFromIndex(XenForo_Search_Indexer $indexer, array $dataList)
     {
-        if (!($this->enabled)) return;
-        $conversationIds = array();
+        if (!($this->enabled))
+        {
+            return;
+        }
+        $conversationIds = [];
         foreach ($dataList AS $data)
         {
             $conversationIds[] = is_array($data) ? $data['conversation_id'] : $data;
@@ -82,14 +75,12 @@ class SV_ConversationImprovements_Search_DataHandler_Conversation extends XenFor
         $indexer->deleteFromIndex('conversation', $conversationIds);
     }
 
-    /**
-     * Rebuilds the index for a batch.
-     *
-     * @see XenForo_Search_DataHandler_Abstract::rebuildIndex()
-     */
     public function rebuildIndex(XenForo_Search_Indexer $indexer, $lastId, $batchSize)
     {
-        if (!($this->enabled)) return false;
+        if (!($this->enabled))
+        {
+            return false;
+        }
         $conversationIds = $this->_getConversationModel()->getConversationIdsInRange($lastId, $batchSize);
         if (!$conversationIds)
         {
@@ -101,17 +92,15 @@ class SV_ConversationImprovements_Search_DataHandler_Conversation extends XenFor
         return max($conversationIds);
     }
 
-    /**
-     * Rebuilds the index for the specified content.
-
-     * @see XenForo_Search_DataHandler_Abstract::quickIndex()
-     */
     public function quickIndex(XenForo_Search_Indexer $indexer, array $contentIds)
     {
-        if (!($this->enabled)) return false;
+        if (!($this->enabled))
+        {
+            return false;
+        }
         $conversationModel = $this->_getConversationModel();
         $conversations = $conversationModel->sv_getConversationsByIds($contentIds);
-        $recipients = array();
+        $recipients = [];
         $flattenedRecipients = $conversationModel->getConversationsRecipients($contentIds);
         foreach ($flattenedRecipients AS &$recipient)
         {
@@ -121,8 +110,8 @@ class SV_ConversationImprovements_Search_DataHandler_Conversation extends XenFor
         foreach ($conversations AS $conversation_id => &$conversation)
         {
             $conversation['all_recipients'] = isset($recipients[$conversation_id])
-                                              ? $recipients[$conversation_id]
-                                              : array();
+                ? $recipients[$conversation_id]
+                : [];
             if (empty($conversation['all_recipients']))
             {
                 continue;
@@ -135,22 +124,20 @@ class SV_ConversationImprovements_Search_DataHandler_Conversation extends XenFor
 
     public function getInlineModConfiguration()
     {
-        return array();
+        return [];
     }
 
-    /**
-     * Gets the type-specific data for a collection of results of this content type.
-     *
-     * @see XenForo_Search_DataHandler_Abstract::getDataForResults()
-     */
     public function getDataForResults(array $ids, array $viewingUser, array $resultsGrouped)
     {
-        if (!($this->enabled)) return array();
+        if (!($this->enabled))
+        {
+            return [];
+        }
         $ids = array_unique($ids);
         $conversationModel = $this->_getConversationModel();
         $conversations = $conversationModel->getConversationsForUserByIdsWithMessage($viewingUser['user_id'], $ids);
         // unflatten conversation recipients in a single query
-        $recipients = array();
+        $recipients = [];
         $flattenedRecipients = $conversationModel->getConversationsRecipients($ids);
         foreach ($flattenedRecipients AS &$recipient)
         {
@@ -160,99 +147,97 @@ class SV_ConversationImprovements_Search_DataHandler_Conversation extends XenFor
         foreach ($conversations AS $conversation_id => &$conversation)
         {
             $conversation['all_recipients'] = isset($recipients[$conversation_id])
-                                              ? $recipients[$conversation_id]
-                                              : array();
+                ? $recipients[$conversation_id]
+                : [];
         }
 
         return $conversations;
     }
 
-    /**
-     * Determines if this result is viewable.
-     *
-     * @see XenForo_Search_DataHandler_Abstract::canViewResult()
-     */
     public function canViewResult(array $result, array $viewingUser)
     {
-        if (!($this->enabled)) return false;
+        if (!($this->enabled))
+        {
+            return false;
+        }
+
         return $this->_getConversationModel()->canViewConversation($result, $null, $viewingUser);
     }
 
-    /**
-     * Prepares a result for display.
-     *
-     * @see XenForo_Search_DataHandler_Abstract::prepareResult()
-     */
     public function prepareResult(array $result, array $viewingUser)
     {
-        if (!($this->enabled)) return $result;
+        if (!($this->enabled))
+        {
+            return $result;
+        }
+
         return $this->_getConversationModel()->prepareConversation($result);
     }
 
     public function addInlineModOption(array &$result)
     {
-        return array();
+        return [];
     }
 
-    /**
-     * Gets the date of the result (from the result's content).
-     *
-     * @see XenForo_Search_DataHandler_Abstract::getResultDate()
-     */
     public function getResultDate(array $result)
     {
         return $result['start_date'];
     }
 
-    /**
-     * Renders a result to HTML.
-     *
-     * @see XenForo_Search_DataHandler_Abstract::renderResult()
-     */
     public function renderResult(XenForo_View $view, array $result, array $search)
     {
-        if (!($this->enabled)) return null;
-        return $view->createTemplateObject('search_result_conversation', array(
-            'conversation' => $result,
-            'conversation_message' => $result,
-            'search' => $search,
-            'enableInlineMod' => $this->_inlineModEnabled
-        ));
+        if (!($this->enabled))
+        {
+            return null;
+        }
+
+        return $view->createTemplateObject(
+            'search_result_conversation', [
+                                            'conversation'         => $result,
+                                            'conversation_message' => $result,
+                                            'search'               => $search,
+                                            'enableInlineMod'      => $this->_inlineModEnabled
+                                        ]
+        );
     }
 
     public function getSearchContentTypes()
     {
-        return array('conversation');
+        return ['conversation'];
     }
 
     public function filterConstraints(XenForo_Search_SourceHandler_Abstract $sourceHandler, array $constraints)
     {
         $constraints = parent::filterConstraints($sourceHandler, $constraints);
         $constraints['require_recipient'] = XenForo_Visitor::getUserId();
+
         return $constraints;
     }
 
     public function processConstraint(XenForo_Search_SourceHandler_Abstract $sourceHandler, $constraint, $constraintInfo, array $constraints)
     {
-        if (!($this->enabled)) return array();
+        if (!($this->enabled))
+        {
+            return [];
+        }
         switch ($constraint)
         {
             case 'reply_count':
                 $replyCount = intval($constraintInfo);
                 if ($replyCount > 0)
                 {
-                    return array(
-                        'query' => array('conversation', 'reply_count', '>=', $replyCount)
-                    );
+                    return [
+                        'query' => ['conversation', 'reply_count', '>=', $replyCount]
+                    ];
                 }
                 break;
 
             case 'prefix':
                 if ($constraintInfo)
                 {
-                    return array(
-                        'metadata' => array('prefix', preg_split('/\D+/', strval($constraintInfo))),
-                    );
+                    return [
+                        'metadata' => ['prefix', preg_split('/\D+/', strval($constraintInfo))],
+                    ];
                 }
                 break;
 
@@ -260,24 +245,25 @@ class SV_ConversationImprovements_Search_DataHandler_Conversation extends XenFor
                 $conversationId = intval($constraintInfo);
                 if ($conversationId > 0)
                 {
-                    return array(
-                        'metadata' => array('conversation', $conversationId)
-                    );
+                    return [
+                        'metadata' => ['conversation', $conversationId]
+                    ];
                 }
                 break;
             case 'require_recipient':
                 if ($constraintInfo)
                 {
-                    return array(
-                       'metadata' => array('recipients', $constraintInfo)
-                    );
+                    return [
+                        'metadata' => ['recipients', $constraintInfo]
+                    ];
                 }
+                break;
             case 'recipients':
                 if ($constraintInfo)
                 {
-                    return array(
-                       'metadata' => array('recipients', $constraintInfo)
-                    );
+                    return [
+                        'metadata' => ['recipients', $constraintInfo]
+                    ];
                 }
                 break;
         }
@@ -285,12 +271,16 @@ class SV_ConversationImprovements_Search_DataHandler_Conversation extends XenFor
         return false;
     }
 
+    /**
+     * @return null|SV_ConversationImprovements_XenForo_Model_Conversation
+     */
     protected function _getConversationModel()
     {
         if ($this->_conversationModel === null)
         {
             $this->_conversationModel = XenForo_Model::create('XenForo_Model_Conversation');
         }
+
         return $this->_conversationModel;
     }
 }

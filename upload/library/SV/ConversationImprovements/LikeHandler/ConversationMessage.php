@@ -2,7 +2,9 @@
 
 class SV_ConversationImprovements_LikeHandler_ConversationMessage extends XenForo_LikeHandler_Abstract
 {
+    /** @var bool */
     protected $enabled = false;
+    /** @var SV_ConversationImprovements_XenForo_Model_Conversation|null */
     protected $_conversationModel = null;
 
     public function __construct()
@@ -30,16 +32,18 @@ class SV_ConversationImprovements_LikeHandler_ConversationMessage extends XenFor
     {
         if (!$this->enabled)
         {
-            return array();
+            return [];
         }
         $conversationModel = $this->_getConversationModel();
 
         $messages = $conversationModel->getConversationMessagesByIds($contentIds);
 
         $conversationIds = XenForo_Application::arrayColumn($messages, 'conversation_id');
-        $conversations = $conversationModel->getConversationsForUserByIdsWithMessage($viewingUser['user_id'], $conversationIds);
+        $conversations = $conversationModel->getConversationsForUserByIdsWithMessage(
+            $viewingUser['user_id'], $conversationIds
+        );
         // link up all recipients
-        $recipients = array();
+        $recipients = [];
         $flattenedRecipients = $conversationModel->getConversationsRecipients($conversationIds);
         foreach ($flattenedRecipients AS &$recipient)
         {
@@ -49,8 +53,8 @@ class SV_ConversationImprovements_LikeHandler_ConversationMessage extends XenFor
         foreach ($conversations AS $conversation_id => &$conversation)
         {
             $conversation['all_recipients'] = isset($recipients[$conversation_id])
-                                              ? $recipients[$conversation_id]
-                                              : array();
+                ? $recipients[$conversation_id]
+                : [];
             if (!$conversationModel->canViewConversation($conversation, $null, $viewingUser))
             {
                 unset($conversations[$conversation_id]);
@@ -70,6 +74,7 @@ class SV_ConversationImprovements_LikeHandler_ConversationMessage extends XenFor
                 unset($messages[$key]);
             }
         }
+
         return $messages;
     }
 
@@ -79,7 +84,9 @@ class SV_ConversationImprovements_LikeHandler_ConversationMessage extends XenFor
         {
             return;
         }
-        $this->_getConversationModel()->batchUpdateConversationMessageLikeUser($oldUserId, $newUserId, $oldUsername, $newUsername);
+        $this->_getConversationModel()->batchUpdateConversationMessageLikeUser(
+            $oldUserId, $newUserId, $oldUsername, $newUsername
+        );
     }
 
     public function getListTemplateName()
@@ -93,6 +100,7 @@ class SV_ConversationImprovements_LikeHandler_ConversationMessage extends XenFor
         {
             $this->_conversationModel = XenForo_Model::create('XenForo_Model_Conversation');
         }
+
         return $this->_conversationModel;
     }
 }

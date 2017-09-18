@@ -11,6 +11,8 @@ class SV_ConversationImprovements_Deferred_SingleConversationIndex extends XenFo
         }
 
         $conversationId = $data['conversationId'];
+
+        /** @var SV_ConversationImprovements_XenForo_Model_Conversation|null $conversationModel */
         $conversationModel = XenForo_Model::create('XenForo_Model_Conversation');
         if (!class_exists('XFCP_SV_ConversationImprovements_XenForo_Model_Conversation', false))
         {
@@ -20,11 +22,11 @@ class SV_ConversationImprovements_Deferred_SingleConversationIndex extends XenFo
         $conversation = $conversationModel->getConversationMasterById($conversationId);
         $messagesPerPage = XenForo_Application::get('options')->messagesPerPage;
 
-        $messageFetchOptions = array(
+        $messageFetchOptions = [
             'perPage' => $messagesPerPage < 100 ? 100 : $messagesPerPage,
-            'page' => $data['start'],
-            'join' => 0
-        );
+            'page'    => $data['start'],
+            'join'    => 0
+        ];
 
         $messages = $conversationModel->getConversationMessages($conversationId, $messageFetchOptions);
 
@@ -33,13 +35,16 @@ class SV_ConversationImprovements_Deferred_SingleConversationIndex extends XenFo
             return false;
         }
 
-        XenForo_Application::defer('SearchIndexPartial', array(
-            'contentType' => 'conversation_message',
-            'contentIds' => XenForo_Application::arrayColumn($messages, 'message_id')
-        ));
+        XenForo_Application::defer(
+            'SearchIndexPartial',
+            [
+                'contentType' => 'conversation_message',
+                'contentIds'  => XenForo_Application::arrayColumn($messages, 'message_id')
+            ]
+        );
 
         $data['start']++;
-        $lastPage = intval(ceil(($conversation['reply_count'] +1) / $messageFetchOptions['perPage']));
+        $lastPage = intval(ceil(($conversation['reply_count'] + 1) / $messageFetchOptions['perPage']));
         if ($data['start'] > $lastPage)
         {
             return $data;

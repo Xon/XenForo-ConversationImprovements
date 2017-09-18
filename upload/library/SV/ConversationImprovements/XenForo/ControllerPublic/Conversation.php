@@ -7,21 +7,28 @@ class SV_ConversationImprovements_XenForo_ControllerPublic_Conversation extends 
         $conversationId = $this->_input->filterSingle('conversation_id', XenForo_Input::UINT);
         $messageId = $this->_input->filterSingle('message_id', XenForo_Input::UINT);
 
-        list($conversation, $conversationMessage) = $this->_getConversationAndMessageOrError($messageId, $conversationId);
+        list($conversation, $conversationMessage) = $this->_getConversationAndMessageOrError(
+            $messageId, $conversationId
+        );
 
-        if (!$this->_getConversationModel()->canLikeConversationMessage($conversationMessage, $conversation, $errorPhraseKey))
+        /** @var SV_ConversationImprovements_XenForo_Model_Conversation $conversationModel */
+        $conversationModel = $this->_getConversationModel();
+        /** @var XenForo_Model_Like $likeModel */
+        $likeModel = $this->getModelFromCache('XenForo_Model_Like');
+
+        if (!$conversationModel->canLikeConversationMessage($conversationMessage, $conversation, $errorPhraseKey))
         {
             throw $this->getErrorOrNoPermissionResponseException($errorPhraseKey);
         }
 
         if (!isset($conversationMessage['likes']))
         {
-            throw $this->getErrorOrNoPermissionResponseException();
+            throw $this->getNoPermissionResponseException();
         }
 
-        $likeModel = $this->getModelFromCache('XenForo_Model_Like');
-
-        $existingLike = $likeModel->getContentLikeByLikeUser('conversation_message', $messageId, XenForo_Visitor::getUserId());
+        $existingLike = $likeModel->getContentLikeByLikeUser(
+            'conversation_message', $messageId, XenForo_Visitor::getUserId()
+        );
 
         if ($this->_request->isPost())
         {
@@ -31,7 +38,9 @@ class SV_ConversationImprovements_XenForo_ControllerPublic_Conversation extends 
             }
             else
             {
-                $latestUsers = $likeModel->likeContent('conversation_message', $messageId, $conversationMessage['user_id']);
+                $latestUsers = $likeModel->likeContent(
+                    'conversation_message', $messageId, $conversationMessage['user_id']
+                );
             }
 
             $liked = ($existingLike ? false : true);
@@ -42,31 +51,38 @@ class SV_ConversationImprovements_XenForo_ControllerPublic_Conversation extends 
                 $conversationMessage['likes'] += ($liked ? 1 : -1);
                 $conversationMessage['like_date'] = ($liked ? XenForo_Application::$time : 0);
 
-                $viewParams = array(
-                    'message' => $conversationMessage,
+                $viewParams = [
+                    'message'      => $conversationMessage,
                     'conversation' => $conversation,
-                    'liked' => $liked,
-                );
+                    'liked'        => $liked,
+                ];
 
-                return $this->responseView('SV_ConversationImprovements_ViewPublic_Conversation_Message_LikeConfirmed', '', $viewParams);
+                return $this->responseView(
+                    'SV_ConversationImprovements_ViewPublic_Conversation_Message_LikeConfirmed', '', $viewParams
+                );
             }
             else
             {
                 return $this->responseRedirect(
-                        XenForo_ControllerResponse_Redirect::SUCCESS,
-                        XenForo_Link::buildPublicLink('conversations/message', $conversation, array('message_id' => $conversationMessage['message_id']))
+                    XenForo_ControllerResponse_Redirect::SUCCESS,
+                    XenForo_Link::buildPublicLink(
+                        'conversations/message', $conversation, ['message_id' => $conversationMessage['message_id']]
+                    )
                 );
             }
         }
         else
         {
-            $viewParams = array(
-                'message' => $conversationMessage,
+            $viewParams = [
+                'message'      => $conversationMessage,
                 'conversation' => $conversation,
-                'like' => $existingLike
-            );
+                'like'         => $existingLike
+            ];
 
-            return $this->responseView('SV_ConversationImprovements_ViewPublic_Conversation_Message_Like', 'sv_conversation_message_like', $viewParams);
+            return $this->responseView(
+                'SV_ConversationImprovements_ViewPublic_Conversation_Message_Like', 'sv_conversation_message_like',
+                $viewParams
+            );
         }
     }
 
@@ -75,7 +91,9 @@ class SV_ConversationImprovements_XenForo_ControllerPublic_Conversation extends 
         $conversationId = $this->_input->filterSingle('conversation_id', XenForo_Input::UINT);
         $messageId = $this->_input->filterSingle('message_id', XenForo_Input::UINT);
 
-        list($conversation, $conversationMessage) = $this->_getConversationAndMessageOrError($messageId, $conversationId);
+        list($conversation, $conversationMessage) = $this->_getConversationAndMessageOrError(
+            $messageId, $conversationId
+        );
 
         $page = max(1, $this->_input->filterSingle('page', XenForo_Input::UINT));
         $perPage = 100;
@@ -89,23 +107,28 @@ class SV_ConversationImprovements_XenForo_ControllerPublic_Conversation extends 
             return $this->responseError(new XenForo_Phrase('sv_no_one_has_liked_this_conversation_message_yet'));
         }
 
-        $likes = $likeModel->getContentLikes('conversation_message', $messageId, array(
-            'page' => $page,
-            'perPage' => $perPage
-        ));
-
-        $viewParams = array(
-            'message' => $conversationMessage,
-            'conversation' => $conversation,
-
-            'likes' => $likes,
-            'page' => $page,
-            'perPage' => $perPage,
-            'total' => $total,
-            'hasMore' => ($page * $perPage) < $total
+        $likes = $likeModel->getContentLikes(
+            'conversation_message', $messageId, [
+                                      'page'    => $page,
+                                      'perPage' => $perPage
+                                  ]
         );
 
-        return $this->responseView('SV_ConversationImprovements_ViewPublic_Conversation_Message_Likes', 'sv_conversation_message_likes', $viewParams);
+        $viewParams = [
+            'message'      => $conversationMessage,
+            'conversation' => $conversation,
+
+            'likes'   => $likes,
+            'page'    => $page,
+            'perPage' => $perPage,
+            'total'   => $total,
+            'hasMore' => ($page * $perPage) < $total
+        ];
+
+        return $this->responseView(
+            'SV_ConversationImprovements_ViewPublic_Conversation_Message_Likes', 'sv_conversation_message_likes',
+            $viewParams
+        );
     }
 
     public function actionIp()
@@ -113,27 +136,36 @@ class SV_ConversationImprovements_XenForo_ControllerPublic_Conversation extends 
         $conversationId = $this->_input->filterSingle('conversation_id', XenForo_Input::UINT);
         $messageId = $this->_input->filterSingle('message_id', XenForo_Input::UINT);
 
-        list($conversation, $conversationMessage) = $this->_getConversationAndMessageOrError($messageId, $conversationId);
+        list($conversation, $conversationMessage) = $this->_getConversationAndMessageOrError(
+            $messageId, $conversationId
+        );
 
-        if (!$this->_getConversationModel()->canViewIps($conversation, $errorPhraseKey))
+        /** @var SV_ConversationImprovements_XenForo_Model_Conversation $conversationModel */
+        $conversationModel = $this->_getConversationModel();
+        /** @var XenForo_Model_Ip $ipModel */
+        $ipModel = $this->getModelFromCache('XenForo_Model_Ip');
+
+        if (!$conversationModel->canViewIps($conversation, $errorPhraseKey))
         {
             throw $this->getErrorOrNoPermissionResponseException($errorPhraseKey);
         }
 
-        $ipInfo = $this->getModelFromCache('XenForo_Model_Ip')->getContentIpInfo($conversationMessage);
+        $ipInfo = $ipModel->getContentIpInfo($conversationMessage);
 
         if (empty($ipInfo['contentIp']))
         {
             return $this->responseError(new XenForo_Phrase('no_ip_information_available'));
         }
 
-        $viewParams = array(
+        $viewParams = [
             'conversation' => $conversation,
-            'message' => $conversationMessage,
-            'ipInfo' => $ipInfo
-        );
+            'message'      => $conversationMessage,
+            'ipInfo'       => $ipInfo
+        ];
 
-        return $this->responseView('SV_ConversationImprovements_ViewPublic_Conversation_Message_Ip', 'sv_conversation_message_ip', $viewParams);
+        return $this->responseView(
+            'SV_ConversationImprovements_ViewPublic_Conversation_Message_Ip', 'sv_conversation_message_ip', $viewParams
+        );
     }
 
     public function actionMessageHistory()
@@ -143,6 +175,7 @@ class SV_ConversationImprovements_XenForo_ControllerPublic_Conversation extends 
 
         $this->_request->setParam('content_type', 'conversation_message');
         $this->_request->setParam('content_id', $messageId);
+
         return $this->responseReroute('XenForo_ControllerPublic_EditHistory', 'index');
     }
 
@@ -152,6 +185,7 @@ class SV_ConversationImprovements_XenForo_ControllerPublic_Conversation extends 
 
         $this->_request->setParam('content_type', 'conversation');
         $this->_request->setParam('content_id', $conversationId);
+
         return $this->responseReroute('XenForo_ControllerPublic_EditHistory', 'index');
     }
 
@@ -161,13 +195,21 @@ class SV_ConversationImprovements_XenForo_ControllerPublic_Conversation extends 
 
         if ($response instanceof XenForo_ControllerResponse_View && !empty($response->params['conversation']))
         {
+            /** @var SV_ConversationImprovements_XenForo_Model_Conversation $conversationModel */
+            $conversationModel = $this->_getConversationModel();
+
             $conversation = $response->params['conversation'];
-            $response->params['canViewConversationHistory'] = $this->_getConversationModel()->canViewConversationHistory($conversation);
+            $response->params['canViewConversationHistory'] = $conversationModel->canViewConversationHistory(
+                $conversation
+            );
         }
 
         return $response;
     }
 
+    /**
+     * @return XenForo_Model|XenForo_Model_User
+     */
     protected function _getUserModel()
     {
         return $this->getModelFromCache('XenForo_Model_User');

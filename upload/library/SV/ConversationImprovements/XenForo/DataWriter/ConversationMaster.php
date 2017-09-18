@@ -3,16 +3,21 @@
 class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends XFCP_SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster
 {
     const OPTION_INDEX_FOR_SEARCH = 'indexForSearch';
-    const OPTION_LOG_EDIT = 'logEdit';
-    const DATA_CONVERSATION = 'conversationInfo';
+    const OPTION_LOG_EDIT         = 'logEdit';
+    const DATA_CONVERSATION       = 'conversationInfo';
 
 
     protected function _getFields()
     {
         $fields = parent::_getFields();
-        $fields["xf_conversation_master"]['conversation_last_edit_date'] = array('type' => self::TYPE_UINT, 'default' => 0);
-        $fields["xf_conversation_master"]['conversation_last_edit_user_id'] = array('type' => self::TYPE_UINT, 'default' => 0);
-        $fields["xf_conversation_master"]['conversation_edit_count'] = array('type' => self::TYPE_UINT_FORCED, 'default' => 0);
+        $fields["xf_conversation_master"]['conversation_last_edit_date'] = ['type' => self::TYPE_UINT, 'default' => 0];
+        $fields["xf_conversation_master"]['conversation_last_edit_user_id'] = [
+            'type' => self::TYPE_UINT, 'default' => 0
+        ];
+        $fields["xf_conversation_master"]['conversation_edit_count'] = [
+            'type' => self::TYPE_UINT_FORCED, 'default' => 0
+        ];
+
         return $fields;
     }
 
@@ -22,6 +27,7 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
         $defaultOptions[self::OPTION_INDEX_FOR_SEARCH] = true;
         $editHistory = XenForo_Application::getOptions()->editHistory;
         $defaultOptions[self::OPTION_LOG_EDIT] = empty($editHistory['enabled']) ? false : $editHistory['enabled'];
+
         return $defaultOptions;
     }
 
@@ -52,8 +58,10 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
             $this->set('conversation_last_edit_user_id', 0);
         }
         parent::_preSave();
-        if ($this->isInsert() && !$this->_newRecipients && XenForo_Application::getOptions()->sv_conversation_with_no_one)
+        if ($this->isInsert() && !$this->_newRecipients && XenForo_Application::getOptions(
+            )->sv_conversation_with_no_one)
         {
+            /** @noinspection PhpUndefinedMethodInspection */
             if (!empty($this->_errors['recipients']) &&
                 $this->_errors['recipients'] instanceof XenForo_Phrase &&
                 $this->_errors['recipients']->getPhraseName() == 'please_enter_at_least_one_valid_recipient')
@@ -94,18 +102,22 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
         parent::delete();
         // update search index outside the transaction
         $this->_deleteFromSearchIndex();
-        $this->getModelFromCache('XenForo_Model_Alert')->deleteAlerts('conversation', $this->get('conversation_id'));
+        /** @var XenForo_Model_Alert $alertModel */
+        $alertModel = $this->getModelFromCache('XenForo_Model_Alert');
+        $alertModel->deleteAlerts('conversation', $this->get('conversation_id'));
     }
 
     protected function _insertEditHistory()
     {
         $historyDw = XenForo_DataWriter::create('XenForo_DataWriter_EditHistory', XenForo_DataWriter::ERROR_SILENT);
-        $historyDw->bulkSet(array(
-            'content_type' => 'conversation',
-            'content_id' => $this->get('conversation_id'),
-            'edit_user_id' => XenForo_Visitor::getUserId(),
-            'old_text' => $this->getExisting('title')
-        ));
+        $historyDw->bulkSet(
+            [
+                'content_type' => 'conversation',
+                'content_id'   => $this->get('conversation_id'),
+                'edit_user_id' => XenForo_Visitor::getUserId(),
+                'old_text'     => $this->getExisting('title')
+            ]
+        );
         $historyDw->save();
     }
 
@@ -124,7 +136,9 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
             if ($this->_firstMessageDw)
             {
                 $dataHandler = $this->sv_getSearchDataHandlerForMessage();
-                $dataHandler->insertIntoIndex($indexer, $this->_firstMessageDw->getMergedData(), $this->getMergedData());
+                $dataHandler->insertIntoIndex(
+                    $indexer, $this->_firstMessageDw->getMergedData(), $this->getMergedData()
+                );
             }
         }
 
@@ -137,10 +151,12 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
 
     protected function _insertOrUpdateSearchIndexForAllMessages()
     {
-        XenForo_Application::defer('SV_ConversationImprovements_Deferred_SingleConversationIndex', array(
+        XenForo_Application::defer(
+            'SV_ConversationImprovements_Deferred_SingleConversationIndex', [
             'conversationId' => $this->get('conversation_id'),
-            'start' => 1
-        ));
+            'start'          => 1
+        ]
+        );
     }
 
     protected function _deleteFromSearchIndex()
@@ -164,30 +180,41 @@ class SV_ConversationImprovements_XenForo_DataWriter_ConversationMaster extends 
     protected function _getDiscussionMessageIds()
     {
         $db = $this->_db;
-        return $db->fetchCol("
+
+        return $db->fetchCol(
+            "
             SELECT message_id
             FROM xf_conversation_message
             WHERE conversation_id = ?
-        ", $this->get('conversation_id'));
+        ", $this->get('conversation_id')
+        );
     }
 
     protected function sv_getSearchDataHandler()
     {
         $dataHandler = $this->_getSearchModel()->getSearchDataHandler('conversation');
+
         return ($dataHandler instanceof SV_ConversationImprovements_Search_DataHandler_Conversation) ? $dataHandler : null;
     }
 
     public function sv_getSearchDataHandlerForMessage()
     {
         $dataHandler = $this->_getSearchModel()->getSearchDataHandler('conversation_message');
+
         return ($dataHandler instanceof SV_ConversationImprovements_Search_DataHandler_ConversationMessage) ? $dataHandler : null;
     }
 
+    /**
+     * @return XenForo_Model|XenForo_Model_Search
+     */
     protected function _getSearchModel()
     {
         return $this->getModelFromCache('XenForo_Model_Search');
     }
 
+    /**
+     * @return XenForo_Model|SV_ConversationImprovements_XenForo_Model_Conversation
+     */
     protected function _getConversationModel()
     {
         return $this->getModelFromCache('XenForo_Model_Conversation');

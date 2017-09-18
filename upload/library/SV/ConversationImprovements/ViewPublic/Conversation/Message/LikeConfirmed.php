@@ -9,16 +9,20 @@ class SV_ConversationImprovements_ViewPublic_Conversation_Message_LikeConfirmed 
 
         if (!empty($message['likes']))
         {
-            $params = array(
+            $params = [
                 'message' => $message,
-                'likesUrl' => XenForo_Link::buildPublicLink('conversations/likes', $conversation, array('message_id' => $message['message_id']))
-            );
+                'likesUrl' => XenForo_Link::buildPublicLink(
+                    'conversations/likes', $conversation, ['message_id' => $message['message_id']]
+                )
+            ];
 
-            $output = $this->_renderer->getDefaultOutputArray(get_class($this), $params, 'likes_summary');
+            /** @var XenForo_ViewRenderer_Json $renderer */
+            $renderer = $this->_renderer;
+            $output = $renderer->getDefaultOutputArray(get_class($this), $params, 'likes_summary');
         }
         else
         {
-            $output = array('templateHtml' => '', 'js' => '', 'css' => '');
+            $output = ['templateHtml' => '', 'js' => '', 'css' => ''];
         }
 
         $output += XenForo_ViewPublic_Helper_Like::getLikeViewParams($this->_params['liked']);
