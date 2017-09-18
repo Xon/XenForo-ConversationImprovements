@@ -16,6 +16,18 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
     {
         $joinOptions = parent::prepareMessageFetchOptions($fetchOptions);
 
+        if (empty($fetchOptions['skipUser']))
+        {
+            $joinOptions['selectFields'] .= ',
+                user.*, IF(user.username IS NULL, message.username, user.username) AS username,
+                user_profile.*';
+            $joinOptions['joinTables'] .= '
+                LEFT JOIN xf_user AS user ON
+                    (user.user_id = message.user_id)
+                LEFT JOIN xf_user_profile AS user_profile ON
+                    (user_profile.user_id = message.user_id)';
+        }
+
         if (isset($fetchOptions['likeUserId']))
         {
             if (empty($fetchOptions['likeUserId']))
@@ -62,15 +74,9 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
 
         return $this->fetchAllKeyed(
             '
-            SELECT message.*,
-                user.*, IF(user.username IS NULL, message.username, user.username) AS username,
-                user_profile.*
+            SELECT message.*
                 ' . $joinOptions['selectFields'] . '
             FROM xf_conversation_message AS message
-            LEFT JOIN xf_user AS user ON
-                (user.user_id = message.user_id)
-            LEFT JOIN xf_user_profile AS user_profile ON
-                (user_profile.user_id = message.user_id)
             ' . $joinOptions['joinTables'] . '
             WHERE message.message_id IN (' . $this->_getDb()->quote($messageIds) . ')
         ', 'message_id'
@@ -146,7 +152,7 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
     {
         return $this->fetchAllKeyed(
             '
-            SELECT conversation_recipient.*
+            SELECT conversation_recipient.user_id
             FROM xf_conversation_recipient AS conversation_recipient
             WHERE conversation_recipient.conversation_id = ?
             ORDER BY conversation_recipient.user_id
@@ -154,7 +160,7 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
         );
     }
 
-    public function getConversationsRecipients(array $conversationIds)
+    public function getConversationsRecipients(array $conversationIds, $simple = false)
     {
         if (!$conversationIds)
         {
@@ -163,7 +169,7 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
 
         return $this->_getDb()->fetchAll(
             '
-            SELECT conversation_recipient.*
+            SELECT ' . ($simple ? 'conversation_recipient.user_id, conversation_recipient.conversation_id' :'conversation_recipient.*' ) .'
             FROM xf_conversation_recipient AS conversation_recipient
             WHERE conversation_recipient.conversation_id IN (' . $this->_getDb()->quote($conversationIds) . ')
             ORDER BY conversation_recipient.conversation_id

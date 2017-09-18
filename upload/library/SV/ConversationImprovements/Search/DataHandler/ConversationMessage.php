@@ -114,8 +114,7 @@ class SV_ConversationImprovements_Search_DataHandler_ConversationMessage extends
         }
         $conversationModel = $this->_getConversationModel();
         $messages = $conversationModel->getConversationMessagesByIds(
-            $contentIds, [
-        ]
+            $contentIds, ['skipUser' => true]
         );
 
         $conversationIds = [];
@@ -126,7 +125,7 @@ class SV_ConversationImprovements_Search_DataHandler_ConversationMessage extends
 
         $conversations = $conversationModel->sv_getConversationsByIds(array_unique($conversationIds));
         $recipients = [];
-        $flattenedRecipients = $conversationModel->getConversationsRecipients($conversationIds);
+        $flattenedRecipients = $conversationModel->getConversationsRecipients($conversationIds, true);
         foreach ($flattenedRecipients AS &$recipient)
         {
             $recipients[$recipient['conversation_id']][$recipient['user_id']] = $recipient;
@@ -141,7 +140,8 @@ class SV_ConversationImprovements_Search_DataHandler_ConversationMessage extends
                 unset($conversations[$conversation_id]);
             }
         }
-
+        unset($flattenedRecipients);
+        unset($recipients);
         foreach ($messages AS &$message)
         {
             $conversation = (isset($conversations[$message['conversation_id']]) ? $conversations[$message['conversation_id']] : null);
