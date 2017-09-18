@@ -16,18 +16,6 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
     {
         $joinOptions = parent::prepareMessageFetchOptions($fetchOptions);
 
-        if (empty($fetchOptions['skipUser']))
-        {
-            $joinOptions['selectFields'] .= ',
-                user.*, IF(user.username IS NULL, message.username, user.username) AS username,
-                user_profile.*';
-            $joinOptions['joinTables'] .= '
-                LEFT JOIN xf_user AS user ON
-                    (user.user_id = message.user_id)
-                LEFT JOIN xf_user_profile AS user_profile ON
-                    (user_profile.user_id = message.user_id)';
-        }
-
         if (isset($fetchOptions['likeUserId']))
         {
             if (empty($fetchOptions['likeUserId']))
@@ -71,6 +59,18 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
         }
 
         $joinOptions = $this->prepareMessageFetchOptions($fetchOptions);
+
+        if (empty($fetchOptions['skipUser']))
+        {
+            $joinOptions['selectFields'] = ',
+                user.*, IF(user.username IS NULL, message.username, user.username) AS username,
+                user_profile.*';
+            $joinOptions['joinTables'] .= '
+                LEFT JOIN xf_user AS user ON
+                    (user.user_id = message.user_id)
+                LEFT JOIN xf_user_profile AS user_profile ON
+                    (user_profile.user_id = message.user_id)';
+        }
 
         return $this->fetchAllKeyed(
             '
