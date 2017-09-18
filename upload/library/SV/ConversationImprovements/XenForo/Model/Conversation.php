@@ -148,14 +148,12 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
             return array();
         }
 
-        $sql = implode(',', array_fill(0, count($conversationIds), '?'));
-
         return $this->_getDb()->fetchAll('
             SELECT conversation_recipient.*
             FROM xf_conversation_recipient AS conversation_recipient
-            WHERE conversation_recipient.conversation_id IN (' .  $sql . ')
+            WHERE conversation_recipient.conversation_id IN (' .  $this->_getDb()->quote($conversationIds) . ')
             order by conversation_recipient.conversation_id
-        ', $conversationIds);
+        ');
     }
 
     public function canViewIps(array $conversation, &$errorPhraseKey = '', array $viewingUser = null)
