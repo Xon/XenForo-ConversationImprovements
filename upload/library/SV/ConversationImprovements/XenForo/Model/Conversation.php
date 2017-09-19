@@ -152,7 +152,7 @@ class SV_ConversationImprovements_XenForo_Model_Conversation extends XFCP_SV_Con
     {
         return $this->fetchAllKeyed(
             '
-            SELECT conversation_recipient.user_id
+            SELECT conversation_recipient.*
             FROM xf_conversation_recipient AS conversation_recipient
             WHERE conversation_recipient.conversation_id = ?
             ORDER BY conversation_recipient.user_id
