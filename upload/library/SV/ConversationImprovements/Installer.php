@@ -111,8 +111,6 @@ class SV_ConversationImprovements_Installer
         // requires overriding XenES_Model_Elasticsearch
         SV_Utils_Deferred_Search::SchemaUpdates($requireIndexing);
 
-        XenForo_Application::defer('Permission', array(), 'Permission', true);
-
         return true;
     }
 
@@ -163,8 +161,6 @@ class SV_ConversationImprovements_Installer
             WHERE content_type IN ('conversation', 'conversation_message');
         "
         );
-
-        XenForo_Application::defer('Permission', array(), 'Permission', true);
 
         return true;
     }
