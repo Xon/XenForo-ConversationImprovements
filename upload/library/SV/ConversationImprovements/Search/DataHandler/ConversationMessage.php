@@ -169,10 +169,7 @@ class SV_ConversationImprovements_Search_DataHandler_ConversationMessage extends
         }
         $conversationModel = $this->_getConversationModel();
 
-        $messages = $conversationModel->getConversationMessagesByIds(
-            $ids, [
-        ]
-        );
+        $messages = $conversationModel->getConversationMessagesByIds($ids);
 
         $conversationIds = [];
         foreach ($messages AS $message)
