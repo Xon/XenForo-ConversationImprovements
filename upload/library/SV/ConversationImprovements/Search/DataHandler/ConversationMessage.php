@@ -18,6 +18,10 @@ class SV_ConversationImprovements_Search_DataHandler_ConversationMessage extends
 
     public function getCustomMapping(array $mapping = [])
     {
+        if (!($this->enabled))
+        {
+            return $mapping;
+        }
         $mapping['properties']['recipients'] = ["type" => "long"];
         $mapping['properties']['conversation'] = ["type" => "long"];
 
@@ -307,7 +311,7 @@ class SV_ConversationImprovements_Search_DataHandler_ConversationMessage extends
      * @param array|null                            $viewingUser
      * @return array
      */
-    public function filterConstraintsFromGeneral(XenForo_Search_SourceHandler_Abstract $sourceHandler, array $constraints, array $constraintsGeneral, array $viewingUser = null)
+    public function filterConstraintsFromGeneral(/** @noinspection PhpUnusedParameterInspection */XenForo_Search_SourceHandler_Abstract $sourceHandler, array $constraints, array $constraintsGeneral, array $viewingUser = null)
     {
         return $constraints;
     }
@@ -497,7 +501,8 @@ class SV_ConversationImprovements_Search_DataHandler_ConversationMessage extends
     }
 
     /**
-     * @return null|SV_ConversationImprovements_XenForo_Model_Conversation|XenForo_Model
+     * @return SV_ConversationImprovements_XenForo_Model_Conversation
+     * @throws XenForo_Exception
      */
     protected function _getConversationModel()
     {
@@ -510,7 +515,8 @@ class SV_ConversationImprovements_Search_DataHandler_ConversationMessage extends
     }
 
     /**
-     * @return null|XenForo_Model|XenForo_Model_User
+     * @return XenForo_Model_User
+     * @throws XenForo_Exception
      */
     protected function _getUserModel()
     {

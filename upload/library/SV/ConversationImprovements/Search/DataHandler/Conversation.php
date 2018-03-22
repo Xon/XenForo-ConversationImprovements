@@ -16,6 +16,10 @@ class SV_ConversationImprovements_Search_DataHandler_Conversation extends XenFor
 
     public function getCustomMapping(array $mapping = [])
     {
+        if (!($this->enabled))
+        {
+            return $mapping;
+        }
         $mapping['properties']['recipients'] = ["type" => "long"];
         $mapping['properties']['conversation'] = ["type" => "long"];
 
@@ -272,7 +276,8 @@ class SV_ConversationImprovements_Search_DataHandler_Conversation extends XenFor
     }
 
     /**
-     * @return null|SV_ConversationImprovements_XenForo_Model_Conversation
+     * @return SV_ConversationImprovements_XenForo_Model_Conversation
+     * @throws XenForo_Exception
      */
     protected function _getConversationModel()
     {
